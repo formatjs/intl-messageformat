@@ -71,10 +71,8 @@ var myNameIs = msg.format({ name: "Ferris Wheeler"});
 
 Examples
 --------
-#### Node.js
+#### Simple String
 ```javascript
-var MessageFormatter = require('intl-messageformat');
-
 var msg = new MessageFormatter("My name is ${name}.");
 
 var myNameIs = msg.format({ name: "Ferris Wheeler"});
@@ -82,13 +80,46 @@ var myNameIs = msg.format({ name: "Ferris Wheeler"});
 // myNameIs === "My name is Ferris Wheeler."
 ```
 
-#### Browser
+#### Complex Formatting
 ```javascript
-var msg = new MessageFormatter("My name is ${name}.");
+var msg = new MessageFormatter(['Some text before ', {
+    type: 'plural',
+    valueName: 'numPeople',
+    offset: 1,
+    options: {
+        one: 'Some message ${ph} with ${#} value',
 
-var myNameIs = msg.format({ name: "Ferris Wheeler"});
+        few: ['Optional prefix text for |few| ', {
+            type: 'select',
+            valueName: 'gender',
+            options: {
+                male: 'Text for male option with \' single quotes',
+                female: 'Text for female option with {}',
+                other: 'Text for default'
+            }
+        }, ' optional postfix text'],
 
-// myNameIs === "My name is Ferris Wheeler."
+        other: 'Some messages for the default',
+
+            '1': ['Optional prefix text ', {
+            type: 'select',
+            valueName: 'gender',
+            options: {
+                male: 'Text for male option with \' single quotes',
+                female: 'Text for female option with {}',
+                other: 'Text for default'
+            }
+        }, ' optional postfix text'],
+    }
+}, ' and text after']);
+
+var complex = msg.format({
+    numPeople: 4,
+    ph: 'whatever',
+    gender: 'male'
+});
+
+// complex === "Some text before Optional prefix text for |few| Text for male option with ' single quotes optional postfix text and text after"
 ```
 
 API
