@@ -42,20 +42,20 @@ Usage
 
 ### Creating a message in Node.js
 
-Message creating is done using the MessageFormatter contstructor as:
+Message creating is done using the MessageFormat contstructor as:
 
 ```javascript
-var MessageFormatter = require('intl-messageformat');
+var MessageFormat = require('intl-messageformat');
 
-var msg = new MessageFormatter("My name is ${name}.");
+var msg = new MessageFormat("My name is ${name}.");
 ```
 
 ### Creating a message in a browser
 
-Message creation is done using the MessageFormatter constructor as:
+Message creation is done using the MessageFormat constructor as:
 
 ```javascript
-var msg = new MessageFormatter("My name is ${name}.");
+var msg = new MessageFormat("My name is ${name}.");
 ```
 
 ### Formatting a message
@@ -73,7 +73,7 @@ Examples
 --------
 #### Simple String
 ```javascript
-var msg = new MessageFormatter("My name is ${name}.");
+var msg = new MessageFormat("My name is ${name}.");
 
 var myNameIs = msg.format({ name: "Ferris Wheeler"});
 
@@ -82,7 +82,7 @@ var myNameIs = msg.format({ name: "Ferris Wheeler"});
 
 #### Complex Formatting
 ```javascript
-var msg = new MessageFormatter(['Some text before ', {
+var msg = new MessageFormat(['Some text before ', {
     type: 'plural',
     valueName: 'numPeople',
     offset: 1,
