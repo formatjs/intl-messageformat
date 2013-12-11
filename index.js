@@ -27,10 +27,10 @@ THE SOFTWARE.
 
     // register in -all- the module systems (at once)
     if (typeof define === 'function' && define.amd) {
-        defined(MessageFormat);
+        define(MessageFormat);
     }
 
-    if (typeof exports === 'object') {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
         module.exports = MessageFormat;
     }
 
