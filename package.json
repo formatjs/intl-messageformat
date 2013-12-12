@@ -37,6 +37,7 @@
     "mocha": "~1.15.1"
   },
   "scripts": {
+    "replural": "grunt replural",
     "pretest": "grunt jshint",
     "test": "istanbul cover -- _mocha tests/ --reporter spec"
   }

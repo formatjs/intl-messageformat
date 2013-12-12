@@ -1,3 +1,5 @@
+
+
 module.exports = function (grunt) {
 
     grunt.initConfig({
@@ -6,6 +8,8 @@ module.exports = function (grunt) {
             all: ['index.js', 'tests/*.js']
         }
     });
+
+    grunt.loadTasks('./tasks');
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
