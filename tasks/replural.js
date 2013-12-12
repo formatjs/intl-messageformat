@@ -14,29 +14,34 @@ module.exports = function(grunt) {
 
         cldr.localeIds.forEach(function(locale) {
             var func,
-                key;
+                str;    // string version of the function
             func = cldr.extractPluralRuleFunction(locale);
-            key = func.toString();
-            if (!unique.hasOwnProperty(key)) {
+            str = func.toString();
+
+            // not sure if repeated function name will cause trouble
+            str = str.replace('function anonymous(', 'function (');
+
+            // js-hint asi
+            str = str.replace('"\n}', '";\n}');
+            // jshint W018 "Confusing use of '!'" caused by stuff like "!(n===11)"
+            str = str.replace(/!\((\w+)===(\d+)\)/g, '($1!==$2)');
+            // jshint W018 "Confusing use of '!'" caused by stuff like "!(n%100===11)"
+            str = str.replace(/!\((\w+)%(\d+)===(\d+)\)/g, '($1%$2!==$3)');
+
+            str = str.replace(/\n/g, ' ');
+
+            if (!unique.hasOwnProperty(str)) {
                 i = Object.keys(unique).length;
-                unique[key] = i;
-                bodies[i] = func;
+                unique[str] = i;
+                bodies[i] = str;
             }
-            locales[locale] = unique[key];
+            locales[locale] = unique[str];
         });
 
         i = 0;
         last = bodies.length - 1;
         lines.push(config.prefix + 'Functions = [');
-        bodies.forEach(function (body) {
-            var str = body.toString();
-
-            // not sure if repeated function name will cause trouble
-            str = str.replace('function anonymous(', 'function (');
-
-            // js-hint cleanup
-            str = str.replace('"\n}', '";\n}');
-            // TODO:  fix W018 "Confusing use of '!'"
+        bodies.forEach(function (str) {
 
             lines.push(indent + str + (i === last ? '' : ','));
             i++;
@@ -87,8 +92,6 @@ module.exports = function(grunt) {
         grunt.file.write('index.js', body, {encoding: 'utf8'});
 
         grunt.log.ok('File `index.js` updated.');
-        grunt.log.warn("WARNING:  the generated code is UGLY and WON'T PASS LINT");
-        grunt.log.warn("It really should be cleaned up by hand (I've done all I could).");
     });
 
 };
