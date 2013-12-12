@@ -42,9 +42,10 @@ THE SOFTWARE.
 
     "use strict";
 
-    // Cached pluralization logic.
-    // Use `npm run replural` to rebuild this data (at end of this file).
-    var _pluralizeFunctions = [],
+    var DEFAULT_LOCALE = (typeof Intl === 'object') && (typeof Intl.DefaultLocale === 'function') ? Intl.DefaultLocale() : 'en',
+        // Cached pluralization logic.
+        // Use `npm run replural` to rebuild this data (at end of this file).
+        _pluralizeFunctions = [],
         _pluralizeLocales = {};
 
     /**
@@ -78,6 +79,15 @@ THE SOFTWARE.
 
         // store locale
         this.locale = locale;
+
+        // We calculate the pluralization function used for the specific locale.
+        // Since this is a bit expensive (if repeated too much) and since the
+        // locale can change on us without notice, we need to keep track of
+        // which locale was used in choosing the pluralization function.
+        // (It's expected that the locale will change very infrequently for
+        // each MessageFormat object.)
+        this._pluralLocale = undefined;
+        this._pluralFunc = undefined;
 
         // store munged locale used by the pluralization data (used by _normalizeCount).
         // This is necessary because of implementation details of the `cldr` NPM package.
@@ -189,26 +199,41 @@ THE SOFTWARE.
      @return {String}
      */
     MessageFormat.prototype._normalizeCount = function (count) {
-        var fn = _pluralizeLocales[this.pluralizeLocale];
-        if (fn) {
-            return fn(count);
+        var locale = this.locale || DEFAULT_LOCALE,
+            fn,
+            parts;
+        // cache the choice of pluralization function
+        if (this._pluralLocale !== locale) {
+            if (locale !== DEFAULT_LOCALE) {
+                parts = this.locale.toLowerCase().split('-');
+                while (parts.length) {
+                    fn = _pluralizeLocales[parts.join('_')];
+                    if (fn) {
+                        break;
+                    }
+                    parts.pop();
+                }
+            }
+            if (!fn) {
+                // While this seems excessive, it's possible the user has a
+                // complex default locale (such as "zh-hans-CN") since the
+                // default locale can come from a browser setting.
+                parts = DEFAULT_LOCALE.toLowerCase().split('-');
+                while (parts.length) {
+                    fn = _pluralizeLocales[parts.join('_')];
+                    if (fn) {
+                        break;
+                    }
+                    parts.pop();
+                }
+            }
+            if (!fn) {
+                fn = _pluralizeLocales.en;
+            }
+            this._pluralLocal = locale;
+            this._pluralFunc = fn;
         }
-
-        // It's much better to use a locale-specific function above,
-        // but this is just in case the locale isn't known.
-        if (count === 0) {
-            return 'zero';
-        } else if (count === 1) {
-            return 'one';
-        } else if (count === 2) {
-            return 'two';
-        } else if (count < 7) {
-            return 'few';
-        } else if (count < 30) {
-            return 'many';
-        } else {
-            return 'other';
-        }
+        return this._pluralFunc(count) || 'other';
     };
 
     /**
