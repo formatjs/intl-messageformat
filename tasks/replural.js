@@ -79,7 +79,6 @@ module.exports = function(grunt) {
 
         grunt.file.write('index.js', body, {encoding: 'utf8'});
 
-        // message user
         grunt.log.ok('File `index.js` updated.');
         grunt.log.warn("WARNING:  the generated code is UGLY and WON'T PASS LINT");
         grunt.log.warn("It really should be cleaned up by hand (I've done all I could).");

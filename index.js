@@ -43,7 +43,7 @@ THE SOFTWARE.
     "use strict";
 
     // Cached pluralization logic.
-    // Use `grunt replural` to rebuild this data (at end of this file).
+    // Use `npm run replural` to rebuild this data (at end of this file).
     var _pluralizeFunctions = [],
         _pluralizeLocales = {};
 
@@ -194,7 +194,7 @@ THE SOFTWARE.
             return fn(count);
         }
 
-        // Much better is if we use a locale-specific function above,
+        // It's much better to use a locale-specific function above,
         // but this is just in case the locale isn't known.
         if (count === 0) {
             return 'zero';
