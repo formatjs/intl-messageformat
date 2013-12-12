@@ -47,7 +47,14 @@ module.exports = function(grunt) {
         last = Object.keys(locales).length - 1;
         lines.push(config.prefix + 'Locales = {');
         Object.keys(locales).forEach(function (locale) {
-            var idx = locales[locale];
+            var idx = locales[locale],
+                root;
+            root = locale.split('_')[0];
+            if (locale !== root) {
+                if (idx === locales[root]) {
+                    return;
+                }
+            }
             lines.push(indent + JSON.stringify(locale) + ': ' + config.prefix + 'Functions[' + idx + ']' + (i === last ? '' : ','));
             i++;
         });
@@ -70,7 +77,7 @@ module.exports = function(grunt) {
 
         ///-------GENERATED PLURALIZATION BEGIN (config)
         ///-------GENERATED PLURALIZATION END
-        body = body.replace(/(\/\/\/-------GENERATED PLURALIZATION BEGIN \(([^)]*)\)\n).*?(\s*\/\/\/-------GENERATED PLURALIZATION END)/, function($0, prefix, config, suffix) {
+        body = body.replace(/(\/\/\/-------GENERATED PLURALIZATION BEGIN \(([^)]*)\)\n)[\s\S]*?(\s*\/\/\/-------GENERATED PLURALIZATION END)/, function($0, prefix, config, suffix) {
             var code;
             config = querystring.parse(config);
             code = generatePluralizationCode(cldr, config) || '';
