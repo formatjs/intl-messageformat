@@ -335,3 +335,62 @@ describe('message creation for plurals', function () {
 
 });
 
+describe('local switching', function () {
+    var messages = {
+        en: [{valueName: 'NAME'}, ' went to ', { valueName: 'CITY'}, '.'],
+        fr: [
+            { valueName: 'NAME' },
+            ' est ',
+            {
+                type: 'gender',
+                valueName: 'gender',
+                options: {
+                    female: 'allée',
+                    other: 'allé'
+                }
+            },
+            ' à ',
+            { valueName: 'CITY'},
+            '.'
+        ]
+    };
+
+   it('en-US', function () {
+     var msg = new IntlMessageFormat(messages.en, 'en-US');
+
+     var m = msg.format({
+        NAME: 'Tony',
+        CITY: 'Paris',
+        gender: 'male'
+     });
+
+     expect(m).to.equal('Tony went to Paris.');
+   });
+
+
+   it('en-US', function () {
+     var msg = new IntlMessageFormat(messages.fr, 'fr-FR');
+
+     var m = msg.format({
+        NAME: 'Tony',
+        CITY: 'Paris',
+        gender: 'male'
+     });
+
+     expect(m).to.equal('Tony est allé à Paris.');
+
+    m = msg.format({
+        NAME: 'Jenny',
+        CITY: 'Paris',
+        gender: 'female'
+     });
+
+     expect(m).to.equal('Jenny est allée à Paris.');
+   });
+
+
+});
+
+
+
+
