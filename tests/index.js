@@ -335,59 +335,179 @@ describe('message creation for plurals', function () {
 
 });
 
-describe('local switching', function () {
+describe('locale switching', function () {
+    var simple = {
+            en: [
+                { valueName: 'NAME' },
+                ' went to ',
+                { valueName: 'CITY' },
+                '.'
+            ],
+            fr: [
+                { valueName: 'NAME' },
+                ' est ',
+                {
+                    type: 'gender',
+                    valueName: 'gender',
+                    options: {
+                        female: 'allée',
+                        other: 'allé'
+                    }
+                },
+                ' à ',
+                { valueName: 'CITY' },
+                '.'
+            ]
+        },
+
+        complex = {
+            en: '${TRAVELLERS} went to ${CITY}.',
+            fr: [
+                '${TRAVELLERS}',
+                {
+                    type: 'plural',
+                    valueName: 'TRAVELLER_COUNT',
+                    options: {
+                        one: [' est ', {
+                            type: 'gender',
+                            valueName: 'GENDER',
+                            options: {
+                                female: 'allée',
+                                other: 'allé'
+                            }
+                        }],
+                        other: [' sont ', {
+                            type: 'gender',
+                            valueName: 'GENDER',
+                            options: {
+                                female: 'allées',
+                                other: 'allés'
+                            }
+                        }]
+                    }
+                },
+                ' à ',
+                '${CITY}',
+                '.'
+            ]
+        },
+
+        maleObj = {
+            NAME: 'Tony',
+            CITY: 'Paris',
+            gender: 'male'
+        },
+        femaleObj = {
+            NAME: 'Jenny',
+            CITY: 'Paris',
+            gender: 'female'
+        },
+
+        maleTravelers = {
+            TRAVELLERS: 'Lucas, Tony and Drew',
+            TRAVELLER_COUNT: 3,
+            GENDER: 'male',
+            CITY: 'Paris'
+        },
+
+        femaleTravelers = {
+            TRAVELLERS: 'Monica',
+            TRAVELLER_COUNT: 1,
+            GENDER: 'female',
+            CITY: 'Paris'
+        };
+
+    it('en-US simple', function () {
+        var msg = new IntlMessageFormat(simple.en, 'en-US');
+
+        expect(msg.format(maleObj)).to.equal('Tony went to Paris.');
+
+        expect(msg.format(femaleObj)).to.equal('Jenny went to Paris.');
+    });
+
+
+    it('fr-FR simple', function () {
+        var msg = new IntlMessageFormat(simple.fr, 'fr-FR');
+
+        expect(msg.format(maleObj)).to.equal('Tony est allé à Paris.');
+
+        expect(msg.format(femaleObj)).to.equal('Jenny est allée à Paris.');
+    });
+
+    it('en-US complex', function () {
+        var msg = new IntlMessageFormat(complex.en, 'en-US');
+
+        expect(msg.format(maleTravelers)).to.equal('Lucas, Tony and Drew went to Paris.');
+
+        expect(msg.format(femaleTravelers)).to.equal('Monica went to Paris.');
+    });
+
+
+    it('fr-FR complex', function () {
+        var msg = new IntlMessageFormat(complex.fr, 'fr-FR');
+
+        expect(msg.format(maleTravelers)).to.equal('Lucas, Tony and Drew sont allés à Paris.');
+
+        expect(msg.format(femaleTravelers)).to.equal('Monica est allée à Paris.');
+    });
+
+
+});
+
+describe('locale switching with counts', function () {
+
     var messages = {
-        en: [{valueName: 'NAME'}, ' went to ', { valueName: 'CITY'}, '.'],
-        fr: [
-            { valueName: 'NAME' },
-            ' est ',
-            {
-                type: 'gender',
-                valueName: 'gender',
-                options: {
-                    female: 'allée',
-                    other: 'allé'
-                }
-            },
-            ' à ',
-            { valueName: 'CITY'},
-            '.'
-        ]
-    };
+            en: [{
+                    type: 'plural',
+                    valueName: 'COMPANY_COUNT',
+                    options: {
+                       one: 'One company',
+                       other: '${#} companies'
+                    }
+                },
+                ' published new books.'
+            ],
+            ru: [{
+                    type: 'plural',
+                    valueName: 'COMPANY_COUNT',
+                    options: {
+                        one: 'Одна компания опубликовала',
+                        few: '${#} компании опубликовали',
+                        many: '${#} компаний опубликовали',
+                        other: '${#} компаний опубликовали'
+                    }
+                },
+                ' новые книги.'
+            ]
+        };
 
-   it('en-US', function () {
-     var msg = new IntlMessageFormat(messages.en, 'en-US');
+    it('en-US', function () {
+        var msg = new IntlMessageFormat(messages.en, 'en-US');
 
-     var m = msg.format({
-        NAME: 'Tony',
-        CITY: 'Paris',
-        gender: 'male'
-     });
+        expect(msg.format({COMPANY_COUNT: 0})).to.equal('0 companies published new books.');
 
-     expect(m).to.equal('Tony went to Paris.');
-   });
+        expect(msg.format({COMPANY_COUNT: 1})).to.equal('One company published new books.');
 
+        expect(msg.format({COMPANY_COUNT: 2})).to.equal('2 companies published new books.');
 
-   it('en-US', function () {
-     var msg = new IntlMessageFormat(messages.fr, 'fr-FR');
+        expect(msg.format({COMPANY_COUNT: 5})).to.equal('5 companies published new books.');
 
-     var m = msg.format({
-        NAME: 'Tony',
-        CITY: 'Paris',
-        gender: 'male'
-     });
+        expect(msg.format({COMPANY_COUNT: 10})).to.equal('10 companies published new books.');
+    });
 
-     expect(m).to.equal('Tony est allé à Paris.');
+    it('en-US', function () {
+        var msg = new IntlMessageFormat(messages.ru, 'ru-RU');
 
-    m = msg.format({
-        NAME: 'Jenny',
-        CITY: 'Paris',
-        gender: 'female'
-     });
+        expect(msg.format({COMPANY_COUNT: 0})).to.equal('0 компаний опубликовали новые книги.');
 
-     expect(m).to.equal('Jenny est allée à Paris.');
-   });
+        expect(msg.format({COMPANY_COUNT: 1})).to.equal('Одна компания опубликовала новые книги.');
 
+        expect(msg.format({COMPANY_COUNT: 2})).to.equal('2 компании опубликовали новые книги.');
+
+        expect(msg.format({COMPANY_COUNT: 5})).to.equal('5 компаний опубликовали новые книги.');
+
+        expect(msg.format({COMPANY_COUNT: 10})).to.equal('10 компаний опубликовали новые книги.');
+    });
 
 });
 
