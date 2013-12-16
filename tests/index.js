@@ -281,7 +281,7 @@ describe('message creation for plurals', function () {
                 many : 'lots of points',
                 other: 'some other amount of points'
             }
-        }, '.']);
+        }, '.'], 'ar');
 
     it('zero', function () {
         var m = msg.format({
