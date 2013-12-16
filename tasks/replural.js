@@ -21,6 +21,9 @@ module.exports = function(grunt) {
             // not sure if repeated function name will cause trouble
             str = str.replace('function anonymous(', 'function (');
 
+            // parseInt() is expensive given that we already know that the input is a number
+            str = str.replace('if\(typeof n==="string"\)n=parseInt\(n,10\);', 'n=Math.floor(n);');
+
             // js-hint asi
             str = str.replace('"\n}', '";\n}');
             // jshint W018 "Confusing use of '!'" caused by stuff like "!(n===11)"
@@ -28,6 +31,7 @@ module.exports = function(grunt) {
             // jshint W018 "Confusing use of '!'" caused by stuff like "!(n%100===11)"
             str = str.replace(/!\((\w+)%(\d+)===(\d+)\)/g, '($1%$2!==$3)');
 
+            // keep it neat
             str = str.replace(/\n/g, ' ');
 
             if (!unique.hasOwnProperty(str)) {
