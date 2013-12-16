@@ -5,7 +5,7 @@ module.exports = function (grunt) {
         jshint: {
             all: ['index.js', 'tests/*.js']
         },
-        replural: {
+        'build-data': {
             dest: 'locale-data'
         }
     });

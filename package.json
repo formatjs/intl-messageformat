@@ -40,7 +40,7 @@
       "cldr": "~2.0.1"
   },
   "scripts": {
-    "replural": "grunt replural",
+    "build-data": "grunt build-data",
     "pretest": "grunt jshint",
     "test": "istanbul cover -- _mocha tests/ --reporter spec"
   }

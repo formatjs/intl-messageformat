@@ -78,8 +78,8 @@ module.exports = function(grunt) {
     }
 
 
-    grunt.registerTask('replural', 'update index.js with latest pluralization rules (requires `cldr` NPM package)', function () {
-        var config = grunt.config.data.replural || {},
+    grunt.registerTask('build-data', 'rebuilds the locale data', function () {
+        var config = grunt.config.data['build-data'] || {},
             roots,
             funcs = {}, // key locale, value function string
             writeCount = 0;
