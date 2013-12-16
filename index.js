@@ -65,12 +65,12 @@ THE SOFTWARE.
 
      @constructor
 
-     @param {LocaleList|String} locale Locale for string formatting
      @param {Array|String} pattern Array or string that serves as formatting pattern.
          Use array for plural and select messages, otherwise use string form.
+     @param {LocaleList|String} locale Locale for string formatting
      @param {Object} optFieldFormatters Holds user defined formatters for each field (Dojo like).
      */
-    function MessageFormat (locale, pattern, optFieldFormatters) {
+    function MessageFormat (pattern, locale, optFieldFormatters) {
         var chunks,
             len,
             i,
@@ -287,7 +287,7 @@ THE SOFTWARE.
      lookUp object.
 
      If the lookUp object returns a string, it will be sandwiched between
-    `obj.prefix` and `obj.postfix` if they exist.
+     `obj.prefix` and `obj.postfix` if they exist.
 
      @param {Ojbect} obj
      @param {Object} lookUp
@@ -296,10 +296,11 @@ THE SOFTWARE.
     MessageFormat.prototype._processObject = function (obj, lookUp) {
         var val = lookUp[obj.valueName],
             valName = val,
+            valType,
             formatterFn;
 
         // our look up object isn't in the provided lookUp object
-        if (!val) {
+        if (typeof val === 'undefined' || val === null) {
             throw 'The valueName `' + obj.valueName + '` was not found.';
         }
 
@@ -320,17 +321,24 @@ THE SOFTWARE.
             val = obj.options[val] || obj.options.other;
         }
 
-        // if we have a string to return, we need to sandwich it with (pre|post)fix
-        if (typeof val === 'string') {
-            // We need to make sure we aren't doing a context look up `${#}`
-            val = val.replace('${#}', valName);
+        valType = typeof val;
+
+        // if we have a string or number to return, we need to sandwich it
+        // with (pre|post)fix
+        if (valType === 'string' || valType === 'number') {
+
+            // strings should be checked for hash tokens
+            if (valType === 'string') {
+                // We need to make sure we aren't doing a context look up `${#}`
+                val = val.replace('${#}', valName);
+            }
 
             // process with a formatter if one exists
             if (obj.formatter) {
                 formatterFn = {}.toString.call(obj.formatter) === '[object Function]' ? obj.formatter : this.formatters[obj.formatter];
 
                 if (formatterFn) {
-                    val = formatterFn.call(this, this.locale, val);
+                    val = formatterFn.call(this, val, this.locale);
                 }
             }
 
