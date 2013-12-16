@@ -37,11 +37,12 @@
     "mocha": "~1.15.1"
   },
   "optionalDependencies": {
-      "cldr": "~2.0.1"
+    "cldr": "~2.0.1"
   },
   "scripts": {
+    "build": "grunt build",
     "build-data": "grunt build-data",
-    "pretest": "grunt jshint",
+    "pretest": "grunt jshint build",
     "test": "istanbul cover -- _mocha tests/ --reporter spec"
   }
 }

@@ -7,6 +7,10 @@ module.exports = function (grunt) {
         },
         'build-data': {
             dest: 'locale-data'
+        },
+        localize: {
+            src: 'locale-data',
+            dest: 'build'
         }
     });
 
@@ -14,5 +18,6 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
+    grunt.registerTask('build', ['localize']);
     grunt.registerTask('default', ['jshint']);
 };

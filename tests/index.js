@@ -36,8 +36,9 @@ var chai,
 // IntlMessageFormat.)
 if ('function' === typeof require) {
     chai = require('chai');
-    IntlMessageFormat = require('../index.js');
-    require(require('path').resolve(__dirname, '..', 'locale-data', 'complete.js'));
+    IntlMessageFormat = require('../build/index.en.js');
+    require('../locale-data/ar.js');
+    require('../locale-data/pl.js');
 }
 expect = chai.expect;
 
@@ -174,8 +175,9 @@ describe('message creation', function () {
                     }
                 }, ' optional postfix text'],
             }
-        }, ' and text after']);
-        msg.locale = 'pl';  // this has the "few" rule that we need
+        }, ' and text after'],
+            'pl'    // this has the "few" rule that we need
+        );
         m = msg.format({
             numPeople: 1,   // offset will move this to "2" so that the "few" group is used
             ph: 'whatever',
