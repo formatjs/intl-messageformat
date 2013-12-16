@@ -37,6 +37,7 @@ var chai,
 if ('function' === typeof require) {
     chai = require('chai');
     IntlMessageFormat = require('../index.js');
+    require(require('path').resolve(__dirname, '..', 'locale-data', 'complete.js'));
 }
 expect = chai.expect;
 

@@ -36,6 +36,9 @@
     "istanbul": "~0.1.46",
     "mocha": "~1.15.1"
   },
+  "optionalDependencies": {
+      "cldr": "~2.0.1"
+  },
   "scripts": {
     "replural": "grunt replural",
     "pretest": "grunt jshint",

@@ -1,80 +1,90 @@
 module.exports = function(grunt) {
 
-    var querystring = require('querystring');
+    var libpath = require('path'),
+        cldr;
 
 
-    function generatePluralizationCode(cldr, config) {
-        var indent = (config.indent ? new Array(parseInt(config.indent, 10) + 1).join(' ') : ''),
-            unique  = {},   // key is stringified function, value is index in `bodies`
-            bodies  = [],   // key is function unique ID, value is the function bodies
+    function listRootLocales() {
+        var roots = {};
+        cldr.localeIds.forEach(function(locale) {
+            if ('root' === locale) {
+                return;
+            }
+            roots[locale.split('_')[0]] = true;
+        });
+        return Object.keys(roots);
+    }
+
+
+    // `fn` is a string representation of the function
+    function cleanupFunction(fn) {
+        // not sure if repeated function name will cause trouble
+        fn = fn.replace('function anonymous(', 'function (');
+
+        // parseInt() is expensive given that we already know that the input is a number
+        fn = fn.replace('if(typeof n==="string")n=parseInt(n,10);', 'n=Math.floor(n);');
+
+        // js-hint asi
+        fn = fn.replace('"\n}', '";\n}');
+        // js-hint W018 "Confusing use of '!'" caused by stuff like "!(n===11)"
+        fn = fn.replace(/!\((\w+)===(\d+)\)/g, '($1!==$2)');
+        // js-hint W018 "Confusing use of '!'" caused by stuff like "!(n%100===11)"
+        fn = fn.replace(/!\((\w+)%(\d+)===(\d+)\)/g, '($1%$2!==$3)');
+
+        // keep it neat
+        fn = fn.replace(/\n/g, ' ');
+
+        return fn;
+    }
+
+
+    // returns a string which registers the function
+    // `fn` is a string representation of the function
+    function addLocale(locale, fn) {
+        return 'IntlMessageFormat.__addLocaleData({locale:"' + locale + '", messageformat:{pluralFunction:' + fn + '}});';
+    }
+
+
+    // gnerate optimized complete locales
+    // `funcs` is an object: keys are locales, values are string representations of the function
+    function addComplete(funcs) {
+        var unique = {},    // key is stringified function, value is the index in `bodies`
+            bodies = [],    // key is function unique ID, value is the function body
             locales = {},   // key is locale, value is index of func to use
             i,
             last,
             lines = [];
-
-        cldr.localeIds.forEach(function(locale) {
-            var func,
-                str;    // string version of the function
-            func = cldr.extractPluralRuleFunction(locale);
-            str = func.toString();
-
-            // not sure if repeated function name will cause trouble
-            str = str.replace('function anonymous(', 'function (');
-
-            // parseInt() is expensive given that we already know that the input is a number
-            str = str.replace('if\(typeof n==="string"\)n=parseInt\(n,10\);', 'n=Math.floor(n);');
-
-            // js-hint asi
-            str = str.replace('"\n}', '";\n}');
-            // jshint W018 "Confusing use of '!'" caused by stuff like "!(n===11)"
-            str = str.replace(/!\((\w+)===(\d+)\)/g, '($1!==$2)');
-            // jshint W018 "Confusing use of '!'" caused by stuff like "!(n%100===11)"
-            str = str.replace(/!\((\w+)%(\d+)===(\d+)\)/g, '($1%$2!==$3)');
-
-            // keep it neat
-            str = str.replace(/\n/g, ' ');
-
-            if (!unique.hasOwnProperty(str)) {
+        Object.keys(funcs).forEach(function(locale) {
+            var fn = funcs[locale];
+            if (! unique.hasOwnProperty(fn)) {
                 i = Object.keys(unique).length;
-                unique[str] = i;
-                bodies[i] = str;
+                unique[fn] = i;
+                bodies[i] = fn;
             }
-            locales[locale] = unique[str];
+            locales[locale] = unique[fn];
         });
-
+        lines.push('var funcs = [');
         i = 0;
         last = bodies.length - 1;
-        lines.push(config.prefix + 'Functions = [');
-        bodies.forEach(function (str) {
-
-            lines.push(indent + str + (i === last ? '' : ','));
+        bodies.forEach(function(fn) {
+            lines.push(fn + (i === last ? '' : ','));
             i++;
         });
         lines.push('];');
-
-        i = 0;
-        last = Object.keys(locales).length - 1;
-        lines.push(config.prefix + 'Locales = {');
-        Object.keys(locales).forEach(function (locale) {
-            var idx = locales[locale],
-                root;
-            root = locale.split('_')[0];
-            if (locale !== root) {
-                if (idx === locales[root]) {
-                    return;
-                }
-            }
-            lines.push(indent + JSON.stringify(locale) + ': ' + config.prefix + 'Functions[' + idx + ']' + (i === last ? '' : ','));
-            i++;
+        Object.keys(funcs).forEach(function(locale) {
+            lines.push(addLocale(locale, 'funcs[' + locales[locale] + ']'));
         });
-        lines.push('};');
-
-        return indent + lines.join('\n' + indent) + '\n';
+        return '(function() {\n' + lines.join('\n') + '\n})();';
     }
 
+
     grunt.registerTask('replural', 'update index.js with latest pluralization rules (requires `cldr` NPM package)', function () {
-        var cldr,
-            body;
+        var config = grunt.config.data.replural || {},
+            roots,
+            funcs = {}, // key locale, value function string
+            writeCount = 0;
+
+        config.dest = config.dest || 'locale-data';
 
         try {
             cldr = require('cldr');
@@ -82,20 +92,26 @@ module.exports = function(grunt) {
             grunt.fatal("`cldr` NPM package not available. please `npm i cldr` and try again");
         }
 
-        body = grunt.file.read('index.js');
+        grunt.file.mkdir(config.dest);
 
-        ///-------GENERATED PLURALIZATION BEGIN (config)
-        ///-------GENERATED PLURALIZATION END
-        body = body.replace(/(\/\/\/-------GENERATED PLURALIZATION BEGIN \(([^)]*)\)\n)[\s\S]*?(\s*\/\/\/-------GENERATED PLURALIZATION END)/, function($0, prefix, config, suffix) {
-            var code;
-            config = querystring.parse(config);
-            code = generatePluralizationCode(cldr, config) || '';
-            return prefix + code + suffix;
+        roots = listRootLocales(cldr);
+        roots.forEach(function(root) {
+            var fn,
+                path;
+            fn = cldr.extractPluralRuleFunction(root);
+            fn = fn.toString();
+            fn = cleanupFunction(fn);
+            funcs[root] = fn;
+            path = libpath.resolve(config.dest, root + '.js');
+            grunt.file.write(path, addLocale(root, fn), {encoding: 'utf8'});
+            writeCount++;
         });
 
-        grunt.file.write('index.js', body, {encoding: 'utf8'});
+        path = libpath.resolve(config.dest, 'complete.js');
+        grunt.file.write(path, addComplete(funcs), {encoding: 'utf8'});
+        writeCount++;
 
-        grunt.log.ok('File `index.js` updated.');
+        grunt.log.ok('Wrote ' + writeCount + ' files in ' + config.dest);
     });
 
 };

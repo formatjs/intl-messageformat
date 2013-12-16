@@ -43,10 +43,8 @@ THE SOFTWARE.
     "use strict";
 
     var DEFAULT_LOCALE = (typeof Intl === 'object') && (typeof Intl.DefaultLocale === 'function') ? Intl.DefaultLocale() : 'en',
-        // Cached pluralization logic.
-        // Use `npm run replural` to rebuild this data (at end of this file).
-        _pluralizeFunctions = [],
-        _pluralizeLocales = {};
+        // localeData registered by __addLocaleData()
+        localeData = {};
 
     /**
      Creates MessageFormat object from a pattern, locale and field formatters.
@@ -200,6 +198,7 @@ THE SOFTWARE.
      */
     MessageFormat.prototype._normalizeCount = function (count) {
         var locale = this.locale || DEFAULT_LOCALE,
+            data,
             fn,
             parts;
         // cache the choice of pluralization function
@@ -207,8 +206,9 @@ THE SOFTWARE.
             if (locale !== DEFAULT_LOCALE) {
                 parts = this.locale.toLowerCase().split('-');
                 while (parts.length) {
-                    fn = _pluralizeLocales[parts.join('_')];
-                    if (fn) {
+                    data = localeData[parts.join('_')];
+                    if (data && data.pluralFunction) {
+                        fn = data.pluralFunction;
                         break;
                     }
                     parts.pop();
@@ -220,15 +220,19 @@ THE SOFTWARE.
                 // default locale can come from a browser setting.
                 parts = DEFAULT_LOCALE.toLowerCase().split('-');
                 while (parts.length) {
-                    fn = _pluralizeLocales[parts.join('_')];
-                    if (fn) {
+                    data = localeData[parts.join('_')];
+                    if (data && data.pluralFunction) {
+                        fn = data.pluralFunction;
                         break;
                     }
                     parts.pop();
                 }
             }
             if (!fn) {
-                fn = _pluralizeLocales.en;
+                data = localeData.en;
+                fn = (data && data.pluralFunction) || function() {
+                    return 'other';
+                };
             }
             this._pluralLocal = locale;
             this._pluralFunc = fn;
@@ -349,244 +353,28 @@ THE SOFTWARE.
         return val;
     };
 
-    ///-------GENERATED PLURALIZATION BEGIN (prefix=_pluralize&indent=4)
-    _pluralizeFunctions = [
-        function (n) {  },
-        function (n) { n=Math.floor(n);if(n===1)return"one";return"other"; },
-        function (n) { n=Math.floor(n);if(n>=0&&n<=1)return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n));n=Math.floor(n);if(i===0||n===1)return"one";return"other"; },
-        function (n) { n=Math.floor(n);if(n===0)return"zero";if(n===1)return"one";if(n===2)return"two";if(n%100>=3&&n%100<=10)return"few";if(n%100>=11&&n%100<=99)return"many";return"other"; },
-        function (n) { n=Math.floor(n);if(n%10===1&&(n%100!==11))return"one";if(n%10>=2&&n%10<=4&&!(n%100>=12&&n%100<=14))return"few";if(n%10===0||n%10>=5&&n%10<=9||n%100>=11&&n%100<=14)return"many";return"other"; },
-        function (n) { return"other"; },
-        function (n) { n=Math.floor(n);if(n%10===1&&!(n%100===11||n%100===71||n%100===91))return"one";if(n%10===2&&!(n%100===12||n%100===72||n%100===92))return"two";if((n%10>=3&&n%10<=4||n%10===9)&&!(n%100>=10&&n%100<=19||n%100>=70&&n%100<=79||n%100>=90&&n%100<=99))return"few";if((n!==0)&&n%1e6===0)return"many";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length,f=parseInt(n.toString().replace(/^[^.]*\.?/,""),10);n=Math.floor(n);if(v===0&&i%10===1&&((i%100!==11)||f%10===1&&(f%100!==11)))return"one";if(v===0&&i%10>=2&&i%10<=4&&(!(i%100>=12&&i%100<=14)||f%10>=2&&f%10<=4&&!(f%100>=12&&f%100<=14)))return"few";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(i===1&&v===0)return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(i===1&&v===0)return"one";if(i>=2&&i<=4&&v===0)return"few";if((v!==0))return"many";return"other"; },
-        function (n) { n=Math.floor(n);if(n===0)return"zero";if(n===1)return"one";if(n===2)return"two";if(n===3)return"few";if(n===6)return"many";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),t=parseInt(n.toString().replace(/^[^.]*\.?|0+$/g,""),10);n=Math.floor(n);if(n===1||(t!==0)&&(i===0||i===1))return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n));n=Math.floor(n);if(i===0||i===1)return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(i>=0&&i<=1&&v===0)return"one";return"other"; },
-        function (n) { n=Math.floor(n);if(n===1)return"one";if(n===2)return"two";if(n>=3&&n<=6)return"few";if(n>=7&&n<=10)return"many";return"other"; },
-        function (n) { n=Math.floor(n);if(n===1||n===11)return"one";if(n===2||n===12)return"two";if(n>=3&&n<=10||n>=13&&n<=19)return"few";return"other"; },
-        function (n) { n=Math.floor(n);if(n%10===1)return"one";if(n%10===2)return"two";if(n%100===0||n%100===20||n%100===40||n%100===60)return"few";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(i===1&&v===0)return"one";if(i===2&&v===0)return"two";if(v===0&&!(n>=0&&n<=10)&&n%10===0)return"many";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),t=parseInt(n.toString().replace(/^[^.]*\.?|0+$/g,""),10);n=Math.floor(n);if(t===0&&i%10===1&&((i%100!==11)||(t!==0)))return"one";return"other"; },
-        function (n) { n=Math.floor(n);if(n===0)return"zero";if(n===1)return"one";return"other"; },
-        function (n) { n=Math.floor(n);if(n===1)return"one";if(n===2)return"two";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n));n=Math.floor(n);if(n===0)return"zero";if((i===0||i===1)&&(n!==0))return"one";return"other"; },
-        function (n) { var f=parseInt(n.toString().replace(/^[^.]*\.?/,""),10);n=Math.floor(n);if(n%10===1&&!(n%100>=11&&n%100<=19))return"one";if(n%10>=2&&n%10<=9&&!(n%100>=11&&n%100<=19))return"few";if((f!==0))return"many";return"other"; },
-        function (n) { var v=n.toString().replace(/^[^.]*\.?/,"").length,f=parseInt(n.toString().replace(/^[^.]*\.?/,""),10);n=Math.floor(n);if(n%10===0||n%100>=11&&n%100<=19||v===2&&f%100>=11&&f%100<=19)return"zero";if(n%10===1&&((n%100!==11)||v===2&&f%10===1&&((f%100!==11)||(v!==2)&&f%10===1)))return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length,f=parseInt(n.toString().replace(/^[^.]*\.?/,""),10);n=Math.floor(n);if(v===0&&(i%10===1||f%10===1))return"one";return"other"; },
-        function (n) { n=Math.floor(n);if(n===1)return"one";if(n===0||n%100>=2&&n%100<=10)return"few";if(n%100>=11&&n%100<=19)return"many";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(i===1&&v===0)return"one";if(v===0&&i%10>=2&&i%10<=4&&!(i%100>=12&&i%100<=14))return"few";if(v===0&&(i!==1)&&(i%10>=0&&i%10<=1||v===0&&(i%10>=5&&i%10<=9||v===0&&i%100>=12&&i%100<=14)))return"many";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length,t=parseInt(n.toString().replace(/^[^.]*\.?|0+$/g,""),10);n=Math.floor(n);if(i===1&&(v===0||i===0&&t===1))return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(i===1&&v===0)return"one";if((v!==0)||n===0||(n!==1)&&n%100>=1&&n%100<=19)return"few";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(v===0&&i%10===1&&(i%100!==11))return"one";if(v===0&&(i%10===0||v===0&&(i%10>=5&&i%10<=9||v===0&&i%100>=11&&i%100<=14)))return"many";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n));n=Math.floor(n);if(i===0||n===1)return"one";if(n>=2&&n<=10)return"few";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),f=parseInt(n.toString().replace(/^[^.]*\.?/,""),10);n=Math.floor(n);if(n===0||n===1||i===0&&f===1)return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(v===0&&i%100===1)return"one";if(v===0&&i%100===2)return"two";if(v===0&&(i%100>=3&&i%100<=4||(v!==0)))return"few";return"other"; },
-        function (n) { n=Math.floor(n);if(n>=0&&n<=1||n>=11&&n<=99)return"one";return"other"; },
-        function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(v===0&&i%10===1&&(i%100!==11))return"one";if(v===0&&i%10>=2&&i%10<=4&&!(i%100>=12&&i%100<=14))return"few";if(v===0&&(i%10===0||v===0&&(i%10>=5&&i%10<=9||v===0&&i%100>=11&&i%100<=14)))return"many";return"other"; }
-    ];
-    _pluralizeLocales = {
-        "aa": _pluralizeFunctions[0],
-        "af": _pluralizeFunctions[1],
-        "agq": _pluralizeFunctions[0],
-        "ak": _pluralizeFunctions[2],
-        "am": _pluralizeFunctions[3],
-        "ar": _pluralizeFunctions[4],
-        "as": _pluralizeFunctions[0],
-        "asa": _pluralizeFunctions[1],
-        "ast": _pluralizeFunctions[1],
-        "az": _pluralizeFunctions[1],
-        "bas": _pluralizeFunctions[0],
-        "be": _pluralizeFunctions[5],
-        "bem": _pluralizeFunctions[1],
-        "bez": _pluralizeFunctions[1],
-        "bg": _pluralizeFunctions[1],
-        "bm": _pluralizeFunctions[6],
-        "bn": _pluralizeFunctions[3],
-        "bo": _pluralizeFunctions[6],
-        "br": _pluralizeFunctions[7],
-        "brx": _pluralizeFunctions[1],
-        "bs": _pluralizeFunctions[8],
-        "byn": _pluralizeFunctions[0],
-        "ca": _pluralizeFunctions[9],
-        "cgg": _pluralizeFunctions[1],
-        "chr": _pluralizeFunctions[1],
-        "cs": _pluralizeFunctions[10],
-        "cy": _pluralizeFunctions[11],
-        "da": _pluralizeFunctions[12],
-        "dav": _pluralizeFunctions[0],
-        "de": _pluralizeFunctions[9],
-        "dje": _pluralizeFunctions[0],
-        "dua": _pluralizeFunctions[0],
-        "dyo": _pluralizeFunctions[0],
-        "dz": _pluralizeFunctions[6],
-        "ebu": _pluralizeFunctions[0],
-        "ee": _pluralizeFunctions[1],
-        "el": _pluralizeFunctions[1],
-        "en": _pluralizeFunctions[9],
-        "eo": _pluralizeFunctions[1],
-        "es": _pluralizeFunctions[1],
-        "et": _pluralizeFunctions[9],
-        "eu": _pluralizeFunctions[1],
-        "ewo": _pluralizeFunctions[0],
-        "fa": _pluralizeFunctions[3],
-        "ff": _pluralizeFunctions[13],
-        "fi": _pluralizeFunctions[14],
-        "fil": _pluralizeFunctions[14],
-        "fo": _pluralizeFunctions[1],
-        "fr": _pluralizeFunctions[13],
-        "fur": _pluralizeFunctions[1],
-        "ga": _pluralizeFunctions[15],
-        "gd": _pluralizeFunctions[16],
-        "gl": _pluralizeFunctions[9],
-        "gsw": _pluralizeFunctions[1],
-        "gu": _pluralizeFunctions[3],
-        "guz": _pluralizeFunctions[0],
-        "gv": _pluralizeFunctions[17],
-        "ha": _pluralizeFunctions[1],
-        "haw": _pluralizeFunctions[1],
-        "he": _pluralizeFunctions[18],
-        "hi": _pluralizeFunctions[3],
-        "hr": _pluralizeFunctions[8],
-        "hu": _pluralizeFunctions[1],
-        "hy": _pluralizeFunctions[13],
-        "ia": _pluralizeFunctions[0],
-        "id": _pluralizeFunctions[6],
-        "ig": _pluralizeFunctions[6],
-        "ii": _pluralizeFunctions[6],
-        "is": _pluralizeFunctions[19],
-        "it": _pluralizeFunctions[9],
-        "ja": _pluralizeFunctions[6],
-        "jgo": _pluralizeFunctions[1],
-        "jmc": _pluralizeFunctions[1],
-        "ka": _pluralizeFunctions[1],
-        "kab": _pluralizeFunctions[13],
-        "kam": _pluralizeFunctions[0],
-        "kde": _pluralizeFunctions[6],
-        "kea": _pluralizeFunctions[6],
-        "khq": _pluralizeFunctions[0],
-        "ki": _pluralizeFunctions[0],
-        "kk": _pluralizeFunctions[1],
-        "kkj": _pluralizeFunctions[1],
-        "kl": _pluralizeFunctions[1],
-        "kln": _pluralizeFunctions[0],
-        "km": _pluralizeFunctions[6],
-        "kn": _pluralizeFunctions[3],
-        "ko": _pluralizeFunctions[6],
-        "kok": _pluralizeFunctions[0],
-        "ks": _pluralizeFunctions[1],
-        "ksb": _pluralizeFunctions[1],
-        "ksf": _pluralizeFunctions[0],
-        "ksh": _pluralizeFunctions[20],
-        "kw": _pluralizeFunctions[21],
-        "ky": _pluralizeFunctions[1],
-        "lag": _pluralizeFunctions[22],
-        "lg": _pluralizeFunctions[1],
-        "lkt": _pluralizeFunctions[6],
-        "ln": _pluralizeFunctions[2],
-        "lo": _pluralizeFunctions[6],
-        "lt": _pluralizeFunctions[23],
-        "lu": _pluralizeFunctions[0],
-        "luo": _pluralizeFunctions[0],
-        "luy": _pluralizeFunctions[0],
-        "lv": _pluralizeFunctions[24],
-        "mas": _pluralizeFunctions[1],
-        "mer": _pluralizeFunctions[0],
-        "mfe": _pluralizeFunctions[0],
-        "mg": _pluralizeFunctions[2],
-        "mgh": _pluralizeFunctions[0],
-        "mgo": _pluralizeFunctions[1],
-        "mk": _pluralizeFunctions[25],
-        "ml": _pluralizeFunctions[1],
-        "mn": _pluralizeFunctions[1],
-        "mr": _pluralizeFunctions[3],
-        "ms": _pluralizeFunctions[6],
-        "mt": _pluralizeFunctions[26],
-        "mua": _pluralizeFunctions[0],
-        "my": _pluralizeFunctions[6],
-        "naq": _pluralizeFunctions[21],
-        "nb": _pluralizeFunctions[1],
-        "nd": _pluralizeFunctions[1],
-        "ne": _pluralizeFunctions[1],
-        "nl": _pluralizeFunctions[9],
-        "nmg": _pluralizeFunctions[0],
-        "nn": _pluralizeFunctions[1],
-        "nnh": _pluralizeFunctions[1],
-        "nr": _pluralizeFunctions[1],
-        "nso": _pluralizeFunctions[2],
-        "nus": _pluralizeFunctions[0],
-        "nyn": _pluralizeFunctions[1],
-        "om": _pluralizeFunctions[1],
-        "or": _pluralizeFunctions[1],
-        "os": _pluralizeFunctions[1],
-        "pa": _pluralizeFunctions[2],
-        "pl": _pluralizeFunctions[27],
-        "ps": _pluralizeFunctions[1],
-        "pt": _pluralizeFunctions[28],
-        "rm": _pluralizeFunctions[1],
-        "rn": _pluralizeFunctions[0],
-        "ro": _pluralizeFunctions[29],
-        "rof": _pluralizeFunctions[1],
-        "root": _pluralizeFunctions[0],
-        "ru": _pluralizeFunctions[30],
-        "rw": _pluralizeFunctions[0],
-        "rwk": _pluralizeFunctions[1],
-        "sah": _pluralizeFunctions[6],
-        "saq": _pluralizeFunctions[1],
-        "sbp": _pluralizeFunctions[0],
-        "se": _pluralizeFunctions[21],
-        "seh": _pluralizeFunctions[1],
-        "ses": _pluralizeFunctions[6],
-        "sg": _pluralizeFunctions[6],
-        "shi": _pluralizeFunctions[31],
-        "si": _pluralizeFunctions[32],
-        "sk": _pluralizeFunctions[10],
-        "sl": _pluralizeFunctions[33],
-        "sn": _pluralizeFunctions[1],
-        "so": _pluralizeFunctions[1],
-        "sq": _pluralizeFunctions[1],
-        "sr": _pluralizeFunctions[8],
-        "ss": _pluralizeFunctions[1],
-        "ssy": _pluralizeFunctions[1],
-        "st": _pluralizeFunctions[1],
-        "sv": _pluralizeFunctions[9],
-        "sw": _pluralizeFunctions[9],
-        "swc": _pluralizeFunctions[0],
-        "ta": _pluralizeFunctions[1],
-        "te": _pluralizeFunctions[1],
-        "teo": _pluralizeFunctions[1],
-        "tg": _pluralizeFunctions[0],
-        "th": _pluralizeFunctions[6],
-        "ti": _pluralizeFunctions[2],
-        "tig": _pluralizeFunctions[1],
-        "tn": _pluralizeFunctions[1],
-        "to": _pluralizeFunctions[6],
-        "tr": _pluralizeFunctions[1],
-        "ts": _pluralizeFunctions[1],
-        "twq": _pluralizeFunctions[0],
-        "tzm": _pluralizeFunctions[34],
-        "uk": _pluralizeFunctions[35],
-        "ur": _pluralizeFunctions[9],
-        "uz": _pluralizeFunctions[1],
-        "vai": _pluralizeFunctions[0],
-        "ve": _pluralizeFunctions[1],
-        "vi": _pluralizeFunctions[6],
-        "vo": _pluralizeFunctions[1],
-        "vun": _pluralizeFunctions[1],
-        "wae": _pluralizeFunctions[1],
-        "wal": _pluralizeFunctions[0],
-        "xh": _pluralizeFunctions[1],
-        "xog": _pluralizeFunctions[1],
-        "yav": _pluralizeFunctions[0],
-        "yo": _pluralizeFunctions[6],
-        "zgh": _pluralizeFunctions[0],
-        "zh": _pluralizeFunctions[6],
-        "zu": _pluralizeFunctions[3],
+    /**
+     Registers localization data for a particular locale.
+     The format is:
+
+     ```
+     {
+        locale: 'the locale',
+        messageformat: {
+            // This function takes a number (count) and turns it into a
+            // pluralization group (e.g. 'one', 'few', 'many', 'other').
+            pluralFunction: function(count) { return 'plural group' }
+        }
+     }
+     ```
+
+     @method __addLocaleData
+     @param {Object} The locale data as described above.
+     @return {nothing}
+     */
+    MessageFormat.__addLocaleData = function(data) {
+        localeData[data.locale] = data.messageformat;
     };
-    ///-------GENERATED PLURALIZATION END
 
     return MessageFormat;
 });

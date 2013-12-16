@@ -4,6 +4,9 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
             all: ['index.js', 'tests/*.js']
+        },
+        replural: {
+            dest: 'locale-data'
         }
     });
 
