@@ -87,11 +87,6 @@ THE SOFTWARE.
         this._pluralLocale = undefined;
         this._pluralFunc = undefined;
 
-        // store munged locale used by the pluralization data (used by _normalizeCount).
-        // This is necessary because of implementation details of the `cldr` NPM package.
-        this.pluralizeLocale = locale ? locale.toLowerCase().replace(/-/g, '_') : locale;
-
-
         // Assume the string passed in is a simple pattern for replacement.
         if (typeof pattern === 'string') {
             // break apart the string into chunks and tokens
@@ -234,7 +229,7 @@ THE SOFTWARE.
                     return 'other';
                 };
             }
-            this._pluralLocal = locale;
+            this._pluralLocale = locale;
             this._pluralFunc = fn;
         }
         return this._pluralFunc(count) || 'other';
