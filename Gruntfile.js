@@ -1,5 +1,7 @@
 module.exports = function (grunt) {
 
+    var libpath = require('path');
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
@@ -11,13 +13,34 @@ module.exports = function (grunt) {
         localize: {
             src: 'locale-data',
             dest: 'build'
+        },
+        uglify: {
+            options: {
+                preserveComments: 'some'
+            },
+            index: {
+                src: 'index.js',
+                dest: 'build/index.min.js'
+            },
+            localized: {
+                expand: true,
+                flatten: true,
+                src: ['build/*.js', '!build/*.min.js'],
+                dest: 'build',
+                rename: function(dest, src) {
+                    var ext = libpath.extname(src),
+                        base = libpath.basename(src, ext);
+                    return libpath.resolve(dest, base + '.min' + ext);
+                }
+            }
         }
     });
 
     grunt.loadTasks('./tasks');
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('build', ['localize']);
+    grunt.registerTask('build', ['localize', 'uglify:index', 'uglify:localized']);
     grunt.registerTask('default', ['jshint']);
 };

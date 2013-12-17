@@ -36,7 +36,7 @@ var chai,
 // IntlMessageFormat.)
 if ('function' === typeof require) {
     chai = require('chai');
-    IntlMessageFormat = require('../build/index.en.js');
+    IntlMessageFormat = require('../build/index.en.min.js');
     require('../locale-data/ar.js');
     require('../locale-data/pl.js');
 }
