@@ -470,7 +470,7 @@ describe('locale switching with counts', function () {
         expect(msg.format({COMPANY_COUNT: 10})).to.equal('10 companies published new books.');
     });
 
-    it('en-US', function () {
+    it('ru-RU', function () {
         var msg = new IntlMessageFormat(messages.ru, 'ru-RU');
 
         expect(msg.format({COMPANY_COUNT: 0})).to.equal('0 компаний опубликовали новые книги.');
