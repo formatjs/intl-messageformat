@@ -146,17 +146,8 @@ describe('message creation', function () {
                     }
                 }, ' optional postfix text'],
 
-                other: 'Some messages for the default',
+                other: 'Some messages for the default'
 
-                '1': ['Optional prefix text ', {
-                    type: 'select',
-                    valueName: 'gender',
-                    options: {
-                        male: 'Text for male option with \' single quotes',
-                        female: 'Text for female option with {}',
-                        other: 'Text for default'
-                    }
-                }, ' optional postfix text'],
             }
         }, ' and text after'],
             'pl'    // this has the "few" rule that we need
@@ -457,7 +448,6 @@ describe('locale switching with counts', function () {
                     valueName: 'COMPANY_COUNT',
                     options: {
                         one: 'Одна компания опубликовала',
-                        few: '${#} компании опубликовали',
                         many: '${#} компаний опубликовали',
                         other: '${#} компаний опубликовали'
                     }
@@ -487,7 +477,7 @@ describe('locale switching with counts', function () {
 
         expect(msg.format({COMPANY_COUNT: 1})).to.equal('Одна компания опубликовала новые книги.');
 
-        expect(msg.format({COMPANY_COUNT: 2})).to.equal('2 компании опубликовали новые книги.');
+        expect(msg.format({COMPANY_COUNT: 2})).to.equal('2 компаний опубликовали новые книги.');
 
         expect(msg.format({COMPANY_COUNT: 5})).to.equal('5 компаний опубликовали новые книги.');
 
