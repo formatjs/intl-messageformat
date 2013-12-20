@@ -62,6 +62,12 @@
         // store locale
         this.locale = locale;
 
+        // Recommend to alway provide a locale
+        if (!locale && console) {
+            (console.warn || console.log)('One does not simply format without a locale.');
+        }
+
+
         // We calculate the pluralization function used for the specific locale.
         // Since this is a bit expensive (if repeated too much) and since the
         // locale can change on us without notice, we need to keep track of
