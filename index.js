@@ -62,6 +62,10 @@
         // store locale
         this.locale = locale;
 
+        if (!locale && JSON.stringify(localeData) === '{}') {
+            throw new ReferenceError('No locale data has been provided for this object yet.');
+        }
+
         // We calculate the pluralization function used for the specific locale.
         // Since this is a bit expensive (if repeated too much) and since the
         // locale can change on us without notice, we need to keep track of
