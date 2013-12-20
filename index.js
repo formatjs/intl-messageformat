@@ -49,7 +49,7 @@
 
      @param {Array|String} pattern Array or string that serves as formatting pattern.
          Use array for plural and select messages, otherwise use string form.
-     @param {LocaleList|String} locale Locale for string formatting
+     @param {LocaleList|String} locale Locale for string formatting.
      @param {Object} optFieldFormatters Holds user defined formatters for each field (Dojo like).
      */
     function MessageFormat (pattern, locale, optFieldFormatters) {
@@ -61,10 +61,6 @@
 
         // store locale
         this.locale = locale;
-
-        if (!locale && JSON.stringify(localeData) === '{}') {
-            throw new ReferenceError('No locale data has been provided for this object yet.');
-        }
 
         // We calculate the pluralization function used for the specific locale.
         // Since this is a bit expensive (if repeated too much) and since the
@@ -184,6 +180,12 @@
             data,
             fn,
             parts;
+
+        // if the locale isn't set, and there is no default locale set, throw
+        if (typeof locale === 'undefined' || locale === null) {
+            throw new ReferenceError('No locale data has been provided for this object yet.');
+        }
+
         // cache the choice of pluralization function
         if (this._pluralLocale !== locale) {
             if (locale !== DEFAULT_LOCALE) {
