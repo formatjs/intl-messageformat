@@ -26,7 +26,7 @@
 
     "use strict";
 
-    var DEFAULT_LOCALE = (typeof Intl === 'object') && (typeof Intl.DefaultLocale === 'function') ? Intl.DefaultLocale() : 'en',
+    var DEFAULT_LOCALE = (typeof Intl === 'object') && (typeof Intl.DefaultLocale === 'function') ? Intl.DefaultLocale() : null,
         // localeData registered by __addLocaleData()
         localeData = {};
 
@@ -212,7 +212,7 @@
                 }
             }
             if (!fn) {
-                data = localeData.en;
+                data = localeData[DEFAULT_LOCALE];
                 fn = (data && data.pluralFunction) || function() {
                     return 'other';
                 };
@@ -356,6 +356,12 @@
      @return {nothing}
      */
     MessageFormat.__addLocaleData = function(data) {
+
+        // if there isn't a default locale set, set it out of the data.locale
+        if (DEFAULT_LOCALE === null) {
+            DEFAULT_LOCALE = data.locale || null;
+        }
+
         localeData[data.locale] = data.messageformat;
     };
 
