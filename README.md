@@ -3,10 +3,12 @@ Intl Message Format Polyfill
 
 ![Build Status][TRAVIS]
 
-Format a string with placeholders, including plural and gender support to create localized messages.
+Format a string with placeholders, including plural and select support to create localized messages.
 
 Overview
 --------
+### Note
+This `IntlMessageFormat` API may change to stay in sync with ECMA-402
 
 ### Goals
 
@@ -142,7 +144,7 @@ var myNameIs = msg.format({ NAME: "Ferris Wheeler"});
 ### Message Pattern Objects
 Pattern objects should always at least contain a `valueName`. There are a few other items that can be included:
 
-- **`type`** _{String}_ - `plural` or `gender` to identify the grouping type
+- **`type`** _{String}_ - `plural` or `select` to identify the grouping type
 
 - **`valueName`** _{String}_ - key to match the `format` object
 
@@ -150,23 +152,23 @@ Pattern objects should always at least contain a `valueName`. There are a few ot
 
 - **`options`** _{Object}_ - each key should be matched based on the `type` specified
 
- - **`zero`** _{String|Array}_ - (plural) Matched when `_normalizeCount` returns `"zero"`
+ - **`zero`** _{String|Array}_ - (plural) Matched when the locale determines that the number is in the `"zero"` pluralization class
 
- - **`one`** _{String|Array}_ - (plural) Matched when `_normalizeCount` returns `"one"`
+ - **`one`** _{String|Array}_ - (plural) Matched when the locale determines that the number is in the `"one"` pluralization class
 
- - **`two`** _{String|Array}_ - (plural) Matched when `_normalizeCount` returns `"two"`
+ - **`two`** _{String|Array}_ - (plural) Matched when the locale determines that the number is in the `"two"` pluralization class
 
- - **`few`** _{String|Array}_ - (plural) Matched when `_normalizeCount` returns `"few"`
+ - **`few`** _{String|Array}_ - (plural) Matched when the locale determines that the number is in the `"few"` pluralization class
 
- - **`many`** _{String|Array}_ - (plural) Matched when `_normalizeCount` returns `"many"`
+ - **`many`** _{String|Array}_ - (plural) Matched when the locale determines that the number is in the `"many"` pluralization class
 
- - **`male`** _{String|Array}_ - (gender) Matched when the `valueName` returns `"male"`
+ - **`male`** _{String|Array}_ - (select) Matched when the `valueName` returns `"male"`
 
- - **`female`** _{String|Array}_ - (gender) Matched when the `valueName` returns `"female"`
+ - **`female`** _{String|Array}_ - (select) Matched when the `valueName` returns `"female"`
 
- - **`neuter`** _{String|Array}_ - (gender) Matched when the `valueName` returns `"neuter"`
+ - **`neuter`** _{String|Array}_ - (select) Matched when the `valueName` returns `"neuter"`
 
- - **`other`** _{String|Array}_ - (plural or gender) Matched when `_normalizeCount` returns `"other"`, the `valueName` returns `"other"` or the returned value from either of those returns a value that is not specified. For instance, if `"male"` is returned and `"male"` is not specified, other will be matched.
+ - **`other`** _{String|Array}_ - (plural or select) Matched when `_normalizeCount` returns `"other"`, the `valueName` returns `"other"` or the returned value from either of those returns a value that is not specified. For instance, if `"male"` is returned and `"male"` is not specified, other will be matched.
 
 When `options` is matched and returns an `Array`, that `Array` is then processed in the same manner. This means, large complex, conditional messages can be formed by defining the pattern as such.
 
@@ -267,10 +269,10 @@ Creates IntlMessageFormat object from a pattern, locale and field formatters. St
 
 ```javascript
 {
-    type: 'plural|gender',
+    type: 'plural|select',
     valueName: 'string',
     offset: 1, // consistent offsets for plurals
-    options: {}, // keys match options for plurals, gender and selects
+    options: {}, // keys match options for plurals and selects
     formatter: 'string|function' // strings are matched to internal formatters
 }
 ```

@@ -26,7 +26,7 @@
 
     "use strict";
 
-    var DEFAULT_LOCALE = (typeof Intl === 'object') && (typeof Intl.DefaultLocale === 'function') ? Intl.DefaultLocale() : 'en',
+    var DEFAULT_LOCALE = null,
         // localeData registered by __addLocaleData()
         localeData = {};
 
@@ -49,7 +49,7 @@
 
      @param {Array|String} pattern Array or string that serves as formatting pattern.
          Use array for plural and select messages, otherwise use string form.
-     @param {LocaleList|String} locale Locale for string formatting
+     @param {LocaleList|String} locale Locale for string formatting.
      @param {Object} optFieldFormatters Holds user defined formatters for each field (Dojo like).
      */
     function MessageFormat (pattern, locale, optFieldFormatters) {
@@ -59,8 +59,19 @@
             p;
 
 
+        if (locale) {
+            // strict value checking for locale when provided
+            if (
+                typeof locale !== 'string' || // make sure we have a string
+                locale.replace(/\s/g,'').length < 2 // it's at least two characters
+            ) {
+                throw new RangeError('Invalid language tag.');
+            }
+        }
+
         // store locale
         this.locale = locale;
+
 
         // We calculate the pluralization function used for the specific locale.
         // Since this is a bit expensive (if repeated too much) and since the
@@ -95,7 +106,6 @@
 
         // save the pattern internally
         this.pattern = pattern;
-
 
         // store formatters
         this.formatters = {};
@@ -180,6 +190,15 @@
             data,
             fn,
             parts;
+
+        // if the locale isn't set, and there is no default locale set, throw
+        if (
+            typeof locale !== 'string' || // make sure we have a string
+            locale.replace(/\s/g,'').length < 2 // it's at least two characters
+        ) {
+            throw new ReferenceError('No locale data has been provided for this object yet.');
+        }
+
         // cache the choice of pluralization function
         if (this._pluralLocale !== locale) {
             if (locale !== DEFAULT_LOCALE) {
@@ -208,7 +227,7 @@
                 }
             }
             if (!fn) {
-                data = localeData.en;
+                data = localeData[DEFAULT_LOCALE];
                 fn = (data && data.pluralFunction) || function() {
                     return 'other';
                 };
@@ -243,7 +262,7 @@
             if (typeof val !== 'string') {
                 while (typeof val !== 'string') {
                     // let's find out what we are working with in the loop
-                    valType = {}.toString.call(val);
+                    valType = Object.prototype.toString.call(val);
 
                     if (valType === '[object Array]') {
                         val = this._processArray.call(this, val, obj);
@@ -284,7 +303,7 @@
 
         // our look up object isn't in the provided lookUp object
         if (typeof val === 'undefined' || val === null) {
-            throw 'The valueName `' + obj.valueName + '` was not found.';
+            throw new ReferenceError('The valueName `' + obj.valueName + '` was not found.');
         }
 
         // if we are dealing with plurals and we have a number, we need to
@@ -318,7 +337,7 @@
 
             // process with a formatter if one exists
             if (obj.formatter) {
-                formatterFn = {}.toString.call(obj.formatter) === '[object Function]' ? obj.formatter : this.formatters[obj.formatter];
+                formatterFn = (typeof obj.formatter === 'function') ? obj.formatter : this.formatters[obj.formatter];
 
                 if (formatterFn) {
                     val = formatterFn.call(this, val, this.locale);
@@ -352,8 +371,15 @@
      @return {nothing}
      */
     MessageFormat.__addLocaleData = function(data) {
+
+        // if there isn't a default locale set, set it out of the data.locale
+        if (DEFAULT_LOCALE === null) {
+            DEFAULT_LOCALE = data.locale;
+        }
+
         localeData[data.locale] = data.messageformat;
     };
+
 
     return MessageFormat;
 });

@@ -18,10 +18,15 @@ var chai,
 // server-side testing.  (On the client we've already loaded chai and
 // IntlMessageFormat.)
 if ('function' === typeof require) {
+
     chai = require('chai');
-    IntlMessageFormat = require('../build/index.en.min.js');
+
+    IntlMessageFormat = require('../index.js');
+
+    require('../locale-data/en.js');
     require('../locale-data/ar.js');
     require('../locale-data/pl.js');
+
 }
 expect = chai.expect;
 
@@ -31,7 +36,7 @@ describe('message resolvedOptions', function () {
     it('empty options', function () {
         var msg, o, p, pCount = 0;
 
-        msg = new IntlMessageFormat('My name is ${name}');
+        msg = new IntlMessageFormat('My name is ${name}', 'en-US');
 
         o = msg.resolvedOptions();
 
@@ -49,7 +54,7 @@ describe('message creation', function () {
 
     it('simple string formatting', function () {
         var msg, m;
-        msg = new IntlMessageFormat('My name is ${first} {last}.');
+        msg = new IntlMessageFormat('My name is ${first} {last}.', 'en-US');
         m = msg.format({
             first: 'Anthony',
             last: 'Pipkin'
@@ -60,7 +65,7 @@ describe('message creation', function () {
     it('simple object formatting', function () {
         var msg, m;
 
-        msg = new IntlMessageFormat(['I have ', 2, ' cars.']);
+        msg = new IntlMessageFormat(['I have ', 2, ' cars.'], 'en-US');
 
         m = msg.format();
 
@@ -71,7 +76,7 @@ describe('message creation', function () {
     it('simple object with post processing tokens', function () {
         var msg, m;
 
-        msg = new IntlMessageFormat(['${', 'company', '}', ' {', 'verb' ,'}.']);
+        msg = new IntlMessageFormat(['${', 'company', '}', ' {', 'verb' ,'}.'], 'en-US');
 
         m = msg.format({
             company: 'Yahoo',
@@ -85,16 +90,16 @@ describe('message creation', function () {
     it ('complex object formatter', function () {
         var msg, m;
         msg = new IntlMessageFormat(['Some text before ', {
-            type: 'plural',
-            valueName: 'numPeople',
-            options: {
-                one: 'one',
+                type: 'plural',
+                valueName: 'numPeople',
+                options: {
+                    one: 'one',
 
-                few: 'few',
+                    few: 'few',
 
-                other: 'Some messages for the default'
-            }
-        }, ' and text after']);
+                    other: 'Some messages for the default'
+                }
+            }, ' and text after'], 'en-US');
 
         m = msg.format({
             numPeople: 20
@@ -106,52 +111,53 @@ describe('message creation', function () {
     it ('complex object formatter with invalid valueName', function () {
         var msg, m;
         msg = new IntlMessageFormat(['Some text before ', {
-            type: 'plural',
-            valueName: 'numPeople',
-            options: {
-                one: 'one',
+                type: 'plural',
+                valueName: 'numPeople',
+                options: {
+                    one: 'one',
 
-                few: 'few',
+                    few: 'few',
 
-                other: 'Some messages for the default'
-            }
-        }, ' and text after']);
+                    other: 'Some messages for the default'
+                }
+            }, ' and text after'], 'en-US');
 
         try {
             m = msg.format({
                 jumper: 20
             });
         } catch (e) {
-            var err = 'The valueName `numPeople` was not found.';
-            expect(e).to.equal(err);
+            var err = new ReferenceError('The valueName `numPeople` was not found.');
+            expect(e.toString()).to.equal(err.toString());
         }
     });
 
     it ('complex object formatter with offset', function () {
         var msg, m;
         msg = new IntlMessageFormat(['Some text before ', {
-            type: 'plural',
-            valueName: 'numPeople',
-            offset: 1,
-            options: {
-                one: 'Some message ${ph} with ${#} value',
+                type: 'plural',
+                valueName: 'numPeople',
+                offset: 1,
+                options: {
+                    one: 'Some message ${ph} with ${#} value',
 
-                few: ['Optional prefix text for |few| ', {
-                    type: 'select',
-                    valueName: 'gender',
-                    options: {
-                        male: 'Text for male option with \' single quotes',
-                        female: 'Text for female option with {}',
-                        other: 'Text for default'
-                    }
-                }, ' optional postfix text'],
+                    few: ['Optional prefix text for |few| ', {
+                        type: 'select',
+                        valueName: 'gender',
+                        options: {
+                            male: 'Text for male option with \' single quotes',
+                            female: 'Text for female option with {}',
+                            other: 'Text for default'
+                        }
+                    }, ' optional postfix text'],
 
-                other: 'Some messages for the default'
+                    other: 'Some messages for the default'
 
-            }
-        }, ' and text after'],
-            'pl'    // this has the "few" rule that we need
-        );
+                }
+            }, ' and text after'],
+                'pl'    // this has the "few" rule that we need
+            );
+
         m = msg.format({
             numPeople: 1,   // offset will move this to "2" so that the "few" group is used
             ph: 'whatever',
@@ -164,10 +170,10 @@ describe('message creation', function () {
     it('Simple string formatter using a custom formatter for a token', function () {
         var msg, m;
         msg = new IntlMessageFormat('Test formatter d: ${num:d}', null, {
-            d: function (val, locale) {
-                return +val;
-            }
-        });
+                d: function (val, locale) {
+                    return +val;
+                }
+            }, 'en-US');
         m = msg.format({
             num: '010'
         });
@@ -177,11 +183,11 @@ describe('message creation', function () {
     it('Simple string formatter using an inline formatter for a token', function () {
         var msg, m;
         msg = new IntlMessageFormat([{
-            valueName: 'str',
-            formatter: function (val, locale) {
-                return val.toString().split('').reverse().join('');
-            }
-        }]);
+                valueName: 'str',
+                formatter: function (val, locale) {
+                    return val.toString().split('').reverse().join('');
+                }
+            }], 'en-US');
         m = msg.format({
             str: 'aardvark'
         });
@@ -191,10 +197,11 @@ describe('message creation', function () {
     it('Simple string formatter using a nonexistent formatter for a token', function () {
         var msg, m;
         msg = new IntlMessageFormat('Test formatter foo: ${num:foo}', null, {
-            d: function (val, locale) {
-                return +val;
-            }
-        });
+                d: function (val, locale) {
+                    return +val;
+                }
+            }, 'en-US');
+
         m = msg.format({
             num: '010'
         });
@@ -219,7 +226,7 @@ describe('message creation', function () {
         CustomFormatters.prototype.constructor = CustomFormatters;
 
 
-        msg = new IntlMessageFormat('d: ${num:d} / f: ${num:f}', null, new CustomFormatters());
+        msg = new IntlMessageFormat('d: ${num:d} / f: ${num:f}', 'en-US', new CustomFormatters());
 
         m = msg.format({
             num: 0
@@ -231,7 +238,7 @@ describe('message creation', function () {
     it('broken pattern', function () {
        var msg, m;
 
-        msg = new IntlMessageFormat('${name} ${formula}');
+        msg = new IntlMessageFormat('${name} ${formula}', 'en-US');
 
         msg.pattern = '${name} ${formula}';
 
@@ -307,9 +314,8 @@ describe('message creation for plurals', function () {
 
         expect(m).to.equal('I have some other amount of points.');
     });
-
-
 });
+
 
 describe('locale switching', function () {
     var simple = {
@@ -486,6 +492,16 @@ describe('locale switching with counts', function () {
 
 });
 
+describe('invalid lang tags', function () {
+    it('empty string', function () {
+        try {
+            var msg = new IntlMessageFormat('{NAME}', " ");
+        } catch (e) {
+            var err = new RangeError('Invalid language tag.');
+            expect(e.toString()).to.equal(err.toString());
+        }
+    });
+});
 
 
 
