@@ -27,6 +27,12 @@
     "use strict";
 
     var DEFAULT_LOCALE = null,
+
+        REGEX_WHITE_SPACE         = /\s/g,
+        REGEX_STRING_TO_PATTERN   = /\$?\{([^\} ]*)\}/g,
+        REGEX_TOKEN_BREAK         = /(\$?\{?[^\$\{\}]*\}?)/gi,
+        REGEX_TOKEN_AND_FORMATTER = /\$?\{([-\w]*):?([-\w]*)?\}/i,
+
         // localeData registered by __addLocaleData()
         localeData = {};
 
@@ -54,16 +60,20 @@
      */
     function MessageFormat (pattern, locale, optFieldFormatters) {
         var chunks,
+            matches,
             len,
             i,
             p;
 
+        // default locale to null
+        /*jshint expr:true */
+        locale || (locale = null);
 
         if (locale) {
             // strict value checking for locale when provided
             if (
                 typeof locale !== 'string' || // make sure we have a string
-                locale.replace(/\s/g,'').length < 2 // it's at least two characters
+                locale.replace(REGEX_WHITE_SPACE,'').length < 2 // it's at least two characters
             ) {
                 throw new RangeError('Invalid language tag.');
             }
@@ -85,17 +95,22 @@
         // Assume the string passed in is a simple pattern for replacement.
         if (typeof pattern === 'string') {
             // break apart the string into chunks and tokens
-            chunks = pattern.match(/((\$?\{)?[^\$\{\}]*\}?)/gi);
+            chunks = pattern.match(REGEX_TOKEN_BREAK);
+
+            // Regular expression unfortunately matches an empty string at the end
+            if (chunks[chunks.length - 1] === '') {
+                chunks.pop();
+            }
 
             // loop through each chunk and replace tokens when found
             for (i = 0, len = chunks.length; i < len; i++) {
                 // create an object for the token when found
-                if (/\$?\{(\w*):?(\w*)?\}/.test(chunks[i])) {
-
+                matches = chunks[i].match(REGEX_TOKEN_AND_FORMATTER);
+                if (matches) {
                     chunks[i] = {
                         // the valuename is the "key" for the token ... ${key}
-                        valueName: chunks[i].match(/\$?\{(\w*):?(\w*)?\}/)[1],
-                        formatter: chunks[i].match(/\$?\{(\w*):?(\w*)?\}/)[2],
+                        valueName: matches[1],
+                        formatter: matches[2],
                     };
                 }
             }
@@ -112,7 +127,7 @@
 
         if (optFieldFormatters) {
             for (p in optFieldFormatters) {
-                if (optFieldFormatters.hasOwnProperty(p)) {
+                if (optFieldFormatters.hasOwnProperty(p) && typeof optFieldFormatters[p] === 'function') {
                     this.formatters[p] = optFieldFormatters[p];
                 }
             }
@@ -147,7 +162,7 @@
         pattern += '';
 
         // find tokens and replace with the object
-        tokens = pattern.match(/\$?\{([^\} ]*)\}/g);
+        tokens = pattern.match(REGEX_STRING_TO_PATTERN);
 
         // if there were any tokens found, we need to replace them with the
         if (tokens) {
