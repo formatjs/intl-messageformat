@@ -117,15 +117,13 @@ describe('IntlMessageFormat', function () {
         });
 
         it('should match the first parameter parsed into an array when it is a string', function () {
-            var msgFmt = new IntlMessageFormat('My name is ${NAME}');
+            var msgFmt = new IntlMessageFormat('My name is {NAME}');
 
             expect(msgFmt.pattern).to.be.an('array');
             expect(msgFmt.pattern.length).to.equal(2);
             expect(msgFmt.pattern[0]).to.equal('My name is ');
-            expect(msgFmt.pattern[1]).to.be.an('object');
-            /*jshint expr:true */
-            expect(msgFmt.pattern[1].valueName).to.exist;
-            expect(msgFmt.pattern[1].valueName).to.equal('NAME');
+            expect(msgFmt.pattern[1]).to.be.a('string');
+            expect(msgFmt.pattern[1]).to.equal('${NAME}');
         });
 
     });
@@ -235,7 +233,7 @@ describe('IntlMessageFormat', function () {
         });
 
         it('should properly replace direct arguments in the string preceeding with a $', function () {
-            var msgFmt = new IntlMessageFormat('My name is ${FIRST} ${LAST}.'),
+            var msgFmt = new IntlMessageFormat('My name is {FIRST} {LAST}.'),
                 m = msgFmt.format({
                     FIRST: 'Anthony',
                     LAST : 'Pipkin'
@@ -248,7 +246,7 @@ describe('IntlMessageFormat', function () {
         it('should process an argument with a value formatter', function () {
             var msgFmt, m;
 
-            msgFmt = new IntlMessageFormat('Test formatter d: ${num:d}', null, {
+            msgFmt = new IntlMessageFormat('Test formatter d: {num, d}', null, {
                     d: function (val, locale) {
                         return +val;
                     }
@@ -264,7 +262,7 @@ describe('IntlMessageFormat', function () {
         it('should not fail if the formatter is non existant', function () {
             var msgFmt, m;
 
-            msgFmt = new IntlMessageFormat('Test formatter foo: ${NUM:foo}', null, {
+            msgFmt = new IntlMessageFormat('Test formatter foo: {NUM, foo}', null, {
                     d: function (val, locale) {
                         return +val;
                     }
@@ -294,7 +292,7 @@ describe('IntlMessageFormat', function () {
             CustomFormatters.prototype.constructor = CustomFormatters;
 
 
-            msg = new IntlMessageFormat('d: ${num:d} / f: ${num:f}', 'en-US', new CustomFormatters());
+            msg = new IntlMessageFormat('d: {num, d} / f: {num, f}', 'en-US', new CustomFormatters());
 
             m = msg.format({
                 num: 0
@@ -306,15 +304,15 @@ describe('IntlMessageFormat', function () {
         it('should work when the pattern is replaced', function () {
            var msg, m;
 
-            msg = new IntlMessageFormat('${NAME} ${FORMULA}', 'en-US');
+            msg = new IntlMessageFormat('{NAME} {FORMULA}', 'en-US');
 
-            msg.pattern = '${FORMULA} ${NAME}';
+            msg.pattern = '{FORMULA} {NAME}';
 
             m = msg.format({
                 NAME: 'apipkin'
             });
 
-            expect(m).to.equal('${FORMULA} apipkin');
+            expect(m).to.equal('{FORMULA} apipkin');
 
         });
 
@@ -351,7 +349,7 @@ describe('IntlMessageFormat', function () {
         it('should concatenate an Array and process arguments afterwards', function () {
             var msgFmt, m;
 
-            msgFmt = new IntlMessageFormat(['${', 'company', '}', ' {', 'verb' ,'}.']);
+            msgFmt = new IntlMessageFormat(['{', 'company', '}', ' {', 'verb' ,'}.']);
 
             m = msgFmt.format({
                 company: 'Yahoo',
@@ -412,7 +410,7 @@ describe('IntlMessageFormat', function () {
 
             msgFmt = new IntlMessageFormat([{
                     valueName: 'ANIMAL',
-                    formatter: function (val, locale) {
+                    format: function (val, locale) {
                         return val.toString().split('').reverse().join('');
                     }
                 }], 'en-US');
@@ -515,10 +513,10 @@ describe('IntlMessageFormat', function () {
             },
 
             complex = {
-                en: '${TRAVELLERS} went to ${CITY}.',
+                en: '{TRAVELLERS} went to {CITY}.',
 
                 fr: [
-                    '${TRAVELLERS}',
+                    '{TRAVELLERS}',
                     {
                         type: 'plural',
                         valueName: 'TRAVELLER_COUNT',
@@ -542,7 +540,7 @@ describe('IntlMessageFormat', function () {
                         }
                     },
                     ' à ',
-                    '${CITY}',
+                    '{CITY}',
                     '.'
                 ]
             },
