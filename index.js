@@ -717,22 +717,93 @@
             },
 
             // TYPE: date
-            date_short: function () { },
+            // Date formats
+            date_short: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat({
+                    month: 'numeric',
+                    day  : 'numeric',
+                    year : '2-digit'
+                });
 
-            date_medium: function () { },
+                return dateFormat.format(val);
+            },
 
-            date_long: function () { },
+            date_medium: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat({
+                    month: 'short',
+                    day  : 'numeric',
+                    year : 'numeric'
+                });
 
-            date_full: function () { },
+                return dateFormat.format(val);
+            },
+
+            date_long: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat({
+                    month: 'long',
+                    day  : 'numeric',
+                    year : 'numeric'
+                });
+
+                return dateFormat.format(val);
+            },
+
+            date_full: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat({
+                    weekday: 'long',
+                    month  : 'long',
+                    day    : 'numeric',
+                    year   : 'numeric'
+                });
+
+                return dateFormat.format(val);
+            },
 
             // TYPE: time
-            time_short: function () { },
+            time_short: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat({
+                    timeZone: options.timeZone || null,
+                    hour    : 'numeric',
+                    minute  : 'numeric'
+                });
 
-            time_medium: function () { },
+                return timeFormat.format(val);
+            },
 
-            time_long: function () { },
+            time_medium: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat({
+                    timeZone: options.timeZone || null,
+                    hour    : 'numeric',
+                    minute  : 'numeric',
+                    second  : 'numeric'
+                });
 
-            time_full: function () { }
+                return timeFormat.format(val);
+            },
+
+            time_long: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat({
+                    timeZone    : options.timeZone || null,
+                    hour        : 'numeric',
+                    minute      : 'numeric',
+                    second      : 'numeric',
+                    timeZoneName: 'short'
+                });
+
+                return timeFormat.format(val);
+            },
+
+            time_full: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat({
+                    timeZone    : options.timeZone || null,
+                    hour        : 'numeric',
+                    minute      : 'numeric',
+                    second      : 'numeric',
+                    timeZoneName: 'short'
+                });
+
+                return timeFormat.format(val);
+            }
 
         }
     };
