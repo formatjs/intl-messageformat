@@ -420,64 +420,6 @@
      **/
     MessageFormat.parse = function (pattern, outputFormatter) {
 
-        // ES5 Fallback
-        var _forEach = Array.prototype.forEach || function (callback/*, ctx */) {
-            if (this === void 0 || this === null ) {
-                throw new TypeError();
-            }
-
-            if (typeof callback !== "function") {
-                throw new TypeError();
-            }
-
-            var t = Object(this),
-                len = t.length >>> 0,
-                ctx = arguments.length >= 2 ? arguments[1] : void 0,
-                i;
-
-            for (i = 0; i < len; i++) {
-                for (i in t) {
-                    callback.call(ctx, t[i], i, t);
-                }
-            }
-        };
-
-        var _some = Array.prototype.some || function (callback/*, ctx */) {
-            if (this === void 0 || this === null ) {
-                throw new TypeError();
-            }
-
-            if (typeof callback !== "function") {
-                throw new TypeError();
-            }
-
-            var t = Object(this),
-                len = t.length >>> 0,
-                ctx = arguments.length >= 2 ? arguments[1] : void 0,
-                i,
-                exit = false;
-
-            for (i = 0; i < len; i++) {
-                if (i in t && callback.call(ctx, t[i], i, t)) {
-                    return true;
-                }
-            }
-
-            return false;
-        };
-
-        var _keys = Object.keys || function (obj) {
-            var arr = [],
-                p;
-
-            for (p in obj) {
-                if (obj.hasOwnProperty(p)) {
-                    arr.push(p);
-                }
-            }
-
-            return arr;
-        };
 
         /**
          Tokenizes a MessageFormat pattern.
@@ -663,6 +605,21 @@
                 }
             },
             {
+                type: 'select',
+                regex: /^{\s*([-\w]+)\s*,\s*select\s*,\s*(.*)\s*}$/,
+                parse: formatElementParser,
+                tokenParser: pairedOptionsParser
+            },
+            {
+                type: 'plural',
+                regex: /^{\s*([-\w]+)\s*,\s*plural\s*,\s*(.*)\s*}$/,
+                parse: formatElementParser,
+                tokenParser: pairedOptionsParser,
+                outputFormatter: function (str) {
+                    return str.replace(/#/g, '${#}');
+                }
+            },
+            {
                 type: 'time',
                 regex: /^{\s*([-\w]+)\s*,\s*time(?:,(.*))?\s*}$/,
                 parse: formatElementParser,
@@ -689,21 +646,6 @@
                 tokenParser: formatOptionParser
             },
             {
-                type: 'select',
-                regex: /^{\s*([-\w]+)\s*,\s*select\s*,\s*(.*)\s*}$/,
-                parse: formatElementParser,
-                tokenParser: pairedOptionsParser
-            },
-            {
-                type: 'plural',
-                regex: /^{\s*([-\w]+)\s*,\s*plural\s*,\s*(.*)\s*}$/,
-                parse: formatElementParser,
-                tokenParser: pairedOptionsParser,
-                outputFormatter: function (str) {
-                    return str.replace(/#/g, '${#}');
-                }
-            },
-            {
                 type: 'custom',
                 regex: /^{\s*([-\w]+)\s*,\s*([a-zA-Z]*)(?:,(.*))?\s*}$/,
                 parse: formatElementParser,
@@ -711,11 +653,74 @@
             }
         ];
 
+        /**
+         For each formatter, test it on the token in order
+         @method parseToken
+         @param {String} token
+         @param {Number} index
+         @param {Array} tokens
+         */
+        function parseToken (token, index, tokens) {
+            var i, len;
+
+            for (i = 0, len = FORMATTERS.length; i < len; i++) {
+                if (parseFormatTokens(FORMATTERS[i], i, tokens, index)) {
+                    return true;
+                }
+            }
+        }
+
+        /**
+         @method parseFormatTokens
+         @param {Object} messageFormat
+         @param {Number} index
+         @param {Array} tokens
+         @param {Number} tokenIndex
+         @return {Boolean}
+         */
+        function parseFormatTokens (messageFormat, index, tokens, tokenIndex) {
+            var token = tokens[tokenIndex],
+                match = token.match(messageFormat.regex),
+                parsed,
+                parsedKeys = [],
+                key,
+                i, len;
+
+            if (match) {
+                parsed = messageFormat.parse(token, match, messageFormat);
+                tokens[tokenIndex] = parsed;
+
+                for (key in parsed) {
+                    if (parsed.hasOwnProperty(key)) {
+                        parsedKeys[key];
+                    }
+                }
+
+                for (i = 0, len = parsedKeys.length; i < len; i++) {
+                    parseFormatOptions(parsedToken, parsedKeys[i], messageFormat);
+                }
+
+            }
+
+            return !!match;
+        }
+
+        /**
+         @method parseFormatOptions
+         @param {Object}
+         */
+        function parseFormatOptions (parsedToken, key, messageFormat) {
+            var value = parsedToken.options[key];
+            value = getFormatElementContent(value);
+            parsedToken.options[key] = parse(value, messageFormat.outputFormatter);
+        }
+
         // ---------------------------------------------
         // -- FUNCTION BASE-----------------------------
         // ---------------------------------------------
 
-        var tokens;
+        var tokens,
+            i, len;
 
         // base case (plain string)
         if (!containsFormatElement(pattern)) {
@@ -724,28 +729,12 @@
         }
 
         tokens = tokenize(pattern);
-        _forEach.call(tokens, function (token, index) {
-            var parsed;
 
-            // Parse the token if any of the formatters are capable of doing so
-            _some.call(FORMATTERS, function (messageFormat) {
-                var match = token.match(messageFormat.regex);
-
-                if (match) {
-                    parsed = messageFormat.parse(token, match, messageFormat);
-                    tokens[index] = parsed;
-
-                    // Recursively parse the option values
-                    _forEach.call(_keys(parsed.options || {}), function (key) {
-                        var value = parsed.options[key];
-                        value = getFormatElementContent(value);
-                        parsed.options[key] = parse(value, messageFormat.outputFormatter);
-                    });
-                }
-
-                return match;
-            });
-        });
+        for (i = 0, len = tokens.length; i < len; i++) {
+            if (tokens[i].charAt(0) === '{') { // tokens must start with a {
+                parseToken(tokens[i], i, tokens);
+            }
+        }
 
         return tokens;
     };
