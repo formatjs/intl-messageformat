@@ -420,6 +420,65 @@
      **/
     MessageFormat.parse = function (pattern, outputFormatter) {
 
+        // ES5 Fallback
+        var _forEach = Array.prototype.forEach || function (callback/*, ctx */) {
+            if (this === void 0 || this === null ) {
+                throw new TypeError();
+            }
+
+            if (typeof callback !== "function") {
+                throw new TypeError();
+            }
+
+            var t = Object(this),
+                len = t.length >>> 0,
+                ctx = arguments.length >= 2 ? arguments[1] : void 0,
+                i;
+
+            for (i = 0; i < len; i++) {
+                for (i in t) {
+                    callback.call(ctx, t[i], i, t);
+                }
+            }
+        };
+
+        var _some = Array.prototype.some || function (callback/*, ctx */) {
+            if (this === void 0 || this === null ) {
+                throw new TypeError();
+            }
+
+            if (typeof callback !== "function") {
+                throw new TypeError();
+            }
+
+            var t = Object(this),
+                len = t.length >>> 0,
+                ctx = arguments.length >= 2 ? arguments[1] : void 0,
+                i,
+                exit = false;
+
+            for (i = 0; i < len; i++) {
+                if (i in t && callback.call(ctx, t[i], i, t)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        var _keys = Object.keys || function (obj) {
+            var arr = [],
+                p;
+
+            for (p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    arr.push(p);
+                }
+            }
+
+            return arr;
+        };
+
         /**
          Tokenizes a MessageFormat pattern.
          @method tokenize
@@ -665,11 +724,11 @@
         }
 
         tokens = tokenize(pattern);
-        tokens.forEach(function (token, index) {
+        _forEach.call(tokens, function (token, index) {
             var parsed;
 
             // Parse the token if any of the formatters are capable of doing so
-            FORMATTERS.some(function (messageFormat) {
+            _some.call(FORMATTERS, function (messageFormat) {
                 var match = token.match(messageFormat.regex);
 
                 if (match) {
@@ -677,7 +736,7 @@
                     tokens[index] = parsed;
 
                     // Recursively parse the option values
-                    Object.keys(parsed.options || {}).forEach(function (key) {
+                    _forEach.call(_keys(parsed.options || {}), function (key) {
                         var value = parsed.options[key];
                         value = getFormatElementContent(value);
                         parsed.options[key] = parse(value, messageFormat.outputFormatter);
