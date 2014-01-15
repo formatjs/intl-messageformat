@@ -568,21 +568,21 @@
              value name at index 1 and a subformat at index 2
          @return {Object} Parsed object
          **/
-        function formatElementParser (formatElement, match) {
+        function formatElementParser (formatElement, match, formatter) {
             var parsed = {
-                    type: this.type,
+                    type: formatter.type,
                     valueName: match[1]
                 },
                 tokens = match[2] && tokenize(match[2], true);
 
             // If there are any additional tokens to parse, it should be done here
-            if (this.tokenParser && tokens) {
-                parsed = this.tokenParser(parsed, tokens);
+            if (formatter.tokenParser && tokens) {
+                parsed = formatter.tokenParser(parsed, tokens);
             }
 
             // Any final modifications to the parsed output should be done here
-            if (this.postParser) {
-                parsed = this.postParser(parsed);
+            if (formatter.postParser) {
+                parsed = formatter.postParser(parsed);
             }
 
             return parsed;
@@ -671,8 +671,9 @@
             // Parse the token if any of the formatters are capable of doing so
             FORMATTERS.some(function (messageFormat) {
                 var match = token.match(messageFormat.regex);
+
                 if (match) {
-                    parsed = messageFormat.parse(token, match);
+                    parsed = messageFormat.parse(token, match, messageFormat);
                     tokens[index] = parsed;
 
                     // Recursively parse the option values
@@ -804,28 +805,8 @@
 
                 return timeFormat.format(val);
             }
-
-        }
+        };
     };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
