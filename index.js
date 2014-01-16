@@ -126,7 +126,7 @@
         this.pattern = pattern;
 
         // store formatters
-        this.formatters = MessageFormat.defaultFormatters();
+        this.formatters = {};
 
         if (optFieldFormatters) {
             for (p in optFieldFormatters) {
@@ -737,123 +737,6 @@
         }
 
         return tokens;
-    };
-
-
-    // ---------------------------------------------------------
-    // -- defaultFormatters ------------------------------------
-    // ---------------------------------------------------------
-
-    MessageFormat.defaultFormatters = function () {
-        return {
-            // TYPE: number
-
-            // 20000 -> 20,000
-            number_integer: function (val, locale) {
-                return (new Intl.NumberFormat(locale)).format(val);
-            },
-            // 20000 -> $20,000.00
-            number_currency: function (val, locale, options) {
-                var currencyFormat = new Intl.NumberFormat(locale, {
-                    style: 'currency',
-                    currency: options.currency || options.CURRENCY || 'USD'
-                });
-                return currencyFormat.format(val);
-            },
-            // 20000 -> 200%
-            number_percent: function (val, locale) {
-                return (new Intl.NumberFormat(locale, { style: 'percent'})).format(val);
-            },
-
-            // TYPE: date
-            // Date formats
-            date_short: function (val, locale, options) {
-                var dateFormat = new Intl.DateTimeFormat({
-                    month: 'numeric',
-                    day  : 'numeric',
-                    year : '2-digit'
-                });
-
-                return dateFormat.format(val);
-            },
-
-            date_medium: function (val, locale, options) {
-                var dateFormat = new Intl.DateTimeFormat({
-                    month: 'short',
-                    day  : 'numeric',
-                    year : 'numeric'
-                });
-
-                return dateFormat.format(val);
-            },
-
-            date_long: function (val, locale, options) {
-                var dateFormat = new Intl.DateTimeFormat({
-                    month: 'long',
-                    day  : 'numeric',
-                    year : 'numeric'
-                });
-
-                return dateFormat.format(val);
-            },
-
-            date_full: function (val, locale, options) {
-                var dateFormat = new Intl.DateTimeFormat({
-                    weekday: 'long',
-                    month  : 'long',
-                    day    : 'numeric',
-                    year   : 'numeric'
-                });
-
-                return dateFormat.format(val);
-            },
-
-            // TYPE: time
-            time_short: function (val, locale, options) {
-                var timeFormat = new Intl.DateTimeFormat({
-                    timeZone: options.timeZone || null,
-                    hour    : 'numeric',
-                    minute  : 'numeric'
-                });
-
-                return timeFormat.format(val);
-            },
-
-            time_medium: function (val, locale, options) {
-                var timeFormat = new Intl.DateTimeFormat({
-                    timeZone: options.timeZone || null,
-                    hour    : 'numeric',
-                    minute  : 'numeric',
-                    second  : 'numeric'
-                });
-
-                return timeFormat.format(val);
-            },
-
-            time_long: function (val, locale, options) {
-                var timeFormat = new Intl.DateTimeFormat({
-                    timeZone    : options.timeZone || null,
-                    hour        : 'numeric',
-                    minute      : 'numeric',
-                    second      : 'numeric',
-                    timeZoneName: 'short'
-                });
-
-                return timeFormat.format(val);
-            },
-
-            time_full: function (val, locale, options) {
-                var timeFormat = new Intl.DateTimeFormat({
-                    timeZone    : options.timeZone || null,
-                    hour        : 'numeric',
-                    minute      : 'numeric',
-                    second      : 'numeric',
-                    timeZoneName: 'short'
-                });
-
-                return timeFormat.format(val);
-            }
-        };
     };
 
 
