@@ -30,8 +30,6 @@
 
         REGEX_WHITE_SPACE         = /\s/g,
         REGEX_STRING_TO_PATTERN   = /\$?\{([^\} ]*)\}/g,
-        REGEX_TOKEN_BREAK         = /(\$?\{?[^\$\{\}]*\}?)/gi,
-        REGEX_TOKEN_AND_FORMATTER = /\$?\{([-\w]*):?([-\w]*)?\}/i,
 
         // localeData registered by __addLocaleData()
         localeData = {};
@@ -95,31 +93,6 @@
         // Assume the string passed in is a simple pattern for replacement.
         if (typeof pattern === 'string') {
             pattern = MessageFormat.parse(pattern);
-            /*
-            // break apart the string into chunks and tokens
-            chunks = pattern.match(REGEX_TOKEN_BREAK);
-
-            // Regular expression unfortunately matches an empty string at the end
-            if (chunks[chunks.length - 1] === '') {
-                chunks.pop();
-            }
-
-            // loop through each chunk and replace tokens when found
-            for (i = 0, len = chunks.length; i < len; i++) {
-                // create an object for the token when found
-                matches = chunks[i].match(REGEX_TOKEN_AND_FORMATTER);
-                if (matches) {
-                    chunks[i] = {
-                        // the valuename is the "key" for the token ... ${key}
-                        valueName: matches[1],
-                        formatter: matches[2],
-                    };
-                }
-            }
-
-            // our pattern should now be the chunked array
-            pattern = chunks;
-            */
         }
 
         // save the pattern internally
