@@ -51,6 +51,42 @@ describe('IntlMessageFormat', function () {
             expect(IntlMessageFormat).itself.to.respondTo('parse');
         });
 
+        it('should fail with an imbalanced bracket', function () {
+            try {
+                IntlMessageFormat.parse('{imbalanced} tokens}');
+            } catch (e) {
+                var err = new Error('Imbalanced bracket detected at index 19 for message "{imbalanced} tokens}"');
+                expect(err.toString()).to.equal(e.toString());
+            }
+        });
+
+        it('should fail if the brackets are not closed properly', function () {
+            try {
+                IntlMessageFormat.parse('{{hello}');
+            } catch (e) {
+                var err = new Error('Brackets were not properly closed: {{hello}');
+                expect(err.toString()).to.equal(e.toString());
+            }
+        });
+
+        it('should fail if options tokens are not supplied in pairs', function () {
+            try {
+                IntlMessageFormat.parse('{FOO, plural, one {bar} other}');
+            } catch (e) {
+                var err = new Error('Options must come in pairs: one, {bar}, other');
+                expect(err.toString()).to.equal(e.toString());
+            }
+        });
+
+        it('should fail if a default `other` option is not supplied', function () {
+            try {
+                IntlMessageFormat.parse('{Foo, plural, one {bar} few {baz}}');
+            } catch (e) {
+                var err = new Error('Options must include default \"other\" option: one, {bar}, few, {baz}');
+                expect(err.toString()).to.equal(e.toString());
+            }
+        });
+
         it('should parse the pattern into an array', function () {
             var i, len, pattern,
                 patterns = [
