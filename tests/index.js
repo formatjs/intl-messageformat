@@ -132,48 +132,39 @@ describe('IntlMessageFormat', function () {
 
     describe('#formatters', function () {
         it('should be an empty object without a third parameter', function () {
-            var msgFmt = new IntlMessageFormat(),
-                bakedIn = [
-                    'numeric_integer',
-                    'numeric_currency',
-                    'numeric_percent',
-                    'date_short',
-                    'date_medium',
-                    'date_long',
-                    'date_full',
-                    'time_short',
-                    'time_medium',
-                    'time_long',
-                    'time_full'
-                ],
-                p, pCount = 0;
+            var msgFmt = new IntlMessageFormat();
 
             expect(msgFmt.formatters).to.be.an('object');
 
-            for (p in msgFmt.formatters) {
-                if (msgFmt.formatters.hasOwnProperty(p)) {
-                    pCount++;
-                }
-            }
 
-            expect(pCount).to.equal(bakedIn.length);
+            // Randomly test for default formatters to exist
+            expect(msgFmt.formatters.number_integer).to.be.a('function');
+            expect(msgFmt.formatters.date_short).to.be.a('function');
+            expect(msgFmt.formatters.time_long).to.be.a('function');
         });
 
-        it('should only contain formatter functions from the third parameter', function () {
-            var msgFmt = new IntlMessageFormat(null, null, {
-                'num': 3,
-                'str': 'foo',
-                'fn' : function () { }
-            }),
+        it('should maintain the default formatters', function () {
+            var msgFmtA = new IntlMessageFormat(null, null, {
+                    foo: function (val) {
+                        return 'foo: ' + val;
+                    }
+                }),
+                msgFmtB;
 
-            formatters = msgFmt.formatters;
 
-            /*jshint expr:true */
-            expect(formatters.fn).to.exist;
-            /*jshint expr:true */
-            expect(formatters.num).to.not.exist;
-            /*jshint expr:true */
-            expect(formatters.str).to.not.exist;
+            expect(msgFmtA.formatters.foo).to.be.a('function');
+            expect(msgFmtA.formatters.time_long).to.be.a('function');
+            expect(msgFmtA.formatters.foo('bar')).to.equal('foo: bar');
+
+
+
+
+            msgFmtB = new IntlMessageFormat();
+
+            /*jshint expr:true*/
+            expect(msgFmtB.formatters.foo).to.not.exist;
+            /*jshint expr:true*/
+            expect(msgFmtB.formatters.time_long).to.exist;
         });
 
     });
@@ -217,9 +208,14 @@ describe('IntlMessageFormat', function () {
             expect(msgFmt).to.respondTo('format');
         });
 
-        it('should return a string', function () {
+        it('should throw an error when no parameter is passed', function () {
             msgFmt = new IntlMessageFormat();
-            expect(msgFmt.format()).to.be.a('string');
+            try {
+                msgFmt.format();
+            } catch (e) {
+                var err = new ReferenceError('`format` expects the first argument to be an Object. undefined was found.');
+                expect(err.toString()).to.equal(e.toString());
+            }
         });
 
     });
@@ -339,7 +335,8 @@ describe('IntlMessageFormat', function () {
 
             msgFmt = new IntlMessageFormat(['I have ', 2, ' cars.']);
 
-            m = msgFmt.format();
+            // pass an object to prevent throwing
+            m = msgFmt.format({});
 
             expect(m).to.equal('I have 2 cars.');
         });
@@ -690,6 +687,7 @@ describe('IntlMessageFormat', function () {
 
         describe('no spaces', function() {
             var msg = new IntlMessageFormat("{STATE}"),
+                emptyErr = new ReferenceError('`format` expects the first argument to be an Object. undefined was found.'),
                 typeErr = new TypeError("Cannot read property 'STATE' of undefined"),
                 refErr = new ReferenceError("The valueName `STATE` was not found."),
                 state = 'Missouri',
@@ -699,7 +697,7 @@ describe('IntlMessageFormat', function () {
                 try {
                     m = msg.format();
                 } catch (e) {
-                    expect(e.toString()).to.equal(typeErr.toString());
+                    expect(e.toString()).to.equal(emptyErr.toString());
                 }
             });
 
@@ -743,6 +741,7 @@ describe('IntlMessageFormat', function () {
 
         describe('a numeral', function() {
             var msg = new IntlMessageFormat("{ST1ATE}"),
+                emptyErr = new ReferenceError('`format` expects the first argument to be an Object. undefined was found.'),
                 typeErr = new TypeError("Cannot read property 'ST1ATE' of undefined"),
                 refErr = new ReferenceError("The valueName `ST1ATE` was not found."),
                 state = 'Missouri',
@@ -752,7 +751,7 @@ describe('IntlMessageFormat', function () {
                 try {
                     m = msg.format();
                 } catch (e) {
-                    expect(e.toString()).to.equal(typeErr.toString());
+                    expect(e.toString()).to.equal(emptyErr.toString());
                 }
             });
 

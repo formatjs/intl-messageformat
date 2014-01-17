@@ -31,6 +31,119 @@
         REGEX_WHITE_SPACE         = /\s/g,
         REGEX_STRING_TO_PATTERN   = /\$?\{([^\} ]*)\}/g,
 
+        DEFAULT_FORMATTERS = {
+            // TYPE: number
+            number_integer: function (val, locale) {
+                // 20000 -> 20,000
+                return (new Intl.NumberFormat(locale)).format(val);
+            },
+            number_currency: function (val, locale, options) {
+                // 20000 -> $20,000.00
+                var currencyFormat = new Intl.NumberFormat(locale, {
+                    style: 'currency',
+                    currency: options.currency || options.CURRENCY || 'USD'
+                });
+                return currencyFormat.format(val);
+            },
+            number_percent: function (val, locale) {
+                // 20000 -> 200%
+                return (new Intl.NumberFormat(locale, { style: 'percent'})).format(val);
+            },
+
+            // TYPE: date
+            // Date formats
+            date_short: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone    : options.timeZone || null,
+                    month: 'numeric',
+                    day  : 'numeric',
+                    year : '2-digit'
+                });
+
+                return dateFormat.format(val);
+            },
+
+            date_medium: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone    : options.timeZone || null,
+                    month: 'short',
+                    day  : 'numeric',
+                    year : 'numeric'
+                });
+
+                return dateFormat.format(val);
+            },
+
+            date_long: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone    : options.timeZone || null,
+                    month: 'long',
+                    day  : 'numeric',
+                    year : 'numeric'
+                });
+
+                return dateFormat.format(val);
+            },
+
+            date_full: function (val, locale, options) {
+                var dateFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone    : options.timeZone || null,
+                    weekday: 'long',
+                    month  : 'long',
+                    day    : 'numeric',
+                    year   : 'numeric'
+                });
+
+                return dateFormat.format(val);
+            },
+
+            // TYPE: time
+            time_short: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone: options.timeZone || null,
+                    hour    : 'numeric',
+                    minute  : 'numeric'
+                });
+
+                return timeFormat.format(val);
+            },
+
+            time_medium: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone: options.timeZone || null,
+                    hour    : 'numeric',
+                    minute  : 'numeric',
+                    second  : 'numeric'
+                });
+
+                return timeFormat.format(val);
+            },
+
+            time_long: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone    : options.timeZone || null,
+                    hour        : 'numeric',
+                    minute      : 'numeric',
+                    second      : 'numeric',
+                    timeZoneName: 'short'
+                });
+
+                return timeFormat.format(val);
+            },
+
+            time_full: function (val, locale, options) {
+                var timeFormat = new Intl.DateTimeFormat(locale, {
+                    timeZone    : options.timeZone || null,
+                    hour        : 'numeric',
+                    minute      : 'numeric',
+                    second      : 'numeric',
+                    timeZoneName: 'short'
+                });
+
+                return timeFormat.format(val);
+            }
+        },
+
         // localeData registered by __addLocaleData()
         localeData = {};
 
@@ -99,15 +212,9 @@
         this.pattern = pattern;
 
         // store formatters
-        this.formatters = {};
-
-        if (optFieldFormatters) {
-            for (p in optFieldFormatters) {
-                if (optFieldFormatters.hasOwnProperty(p) && typeof optFieldFormatters[p] === 'function') {
-                    this.formatters[p] = optFieldFormatters[p];
-                }
-            }
-        }
+        this.formatters = optFieldFormatters || {};
+        /*jshint proto:true*/
+        this.formatters.__proto__ = DEFAULT_FORMATTERS;
     }
 
     /**
@@ -124,9 +231,9 @@
             len,
             i;
 
-        // default value for `obj`? should this just throw
-        /* jshint expr:true */
-        obj || (obj = {});
+        if (typeof obj !== 'object') {
+            throw new ReferenceError('`format` expects the first argument to be an Object. ' + typeof obj + ' was found.');
+        }
 
         // the pattern we have is an array, we need to stitch it together
         // before moving forward
@@ -161,7 +268,6 @@
                 }
             }
         }
-
 
         return pattern;
     };
@@ -388,10 +494,9 @@
      Parses a pattern that may contain nested format elements.
      @method parse
      @param {String} pattern A pattern
-     @param {Function} outputFormatter An optional formatter for the string output
      @return {Object|Array} Parsed output
      **/
-    MessageFormat.parse = function (pattern, outputFormatter) {
+    MessageFormat.parse = function (pattern) {
 
 
         /**
@@ -408,7 +513,9 @@
                 startIndex  = 0,
                 endIndex,
                 substr,
-                match;
+                match,
+                i,
+                len;
 
 
             match = bracketRE.exec(pattern);
@@ -459,9 +566,9 @@
             }
 
             if (trim) {
-                tokens = tokens.map(function (token) {
-                    return token.replace(/^\s*/, '').replace(/\s*$/, '');
-                });
+                for (i = 0, len = tokens.length; i < len; i++) {
+                    tokens[i] = tokens[i].replace(/^\s+|\s+$/gm, '');
+                }
             }
 
             return tokens;
@@ -477,7 +584,7 @@
          @return {String} Contents of format element
          **/
         function getFormatElementContent (formatElement) {
-            return formatElement.replace(/^{\s*/, '').replace(/\s*}$/, '');
+            return formatElement.replace(/^\{\s*|\s*\}$/, '');
         }
 
         /**
@@ -509,7 +616,7 @@
             parsed.options  = {};
 
             if (tokens.length % 2) {
-                throw new Error('Options must come in pairs: ' + JSON.stringify(tokens));
+                throw new Error('Options must come in pairs: ' + tokens.join(', '));
             }
 
             for (i = 0, l = tokens.length; i < l; i += 2) {
@@ -522,7 +629,7 @@
             }
 
             if (!hasDefault) {
-                throw new Error('Options must include default "other" option: ' + JSON.stringify(tokens));
+                throw new Error('Options must include default "other" option: ' + tokens.join(', '));
             }
 
             return parsed;
@@ -663,14 +770,16 @@
                 parsed = messageFormat.parse(token, match, messageFormat);
                 tokens[tokenIndex] = parsed;
 
-                for (key in parsed) {
-                    if (parsed.hasOwnProperty(key)) {
-                        parsedKeys[key];
+                if (typeof parsed === 'object' && parsed.options) {
+                    for (key in parsed) {
+                        if (parsed.hasOwnProperty(key)) {
+                            parsedKeys.push(key);
+                        }
                     }
                 }
 
                 for (i = 0, len = parsedKeys.length; i < len; i++) {
-                    parseFormatOptions(parsedToken, parsedKeys[i], messageFormat);
+                    parseFormatOptions(parsed, parsedKeys[i], messageFormat);
                 }
 
             }
@@ -683,7 +792,7 @@
          @param {Object}
          */
         function parseFormatOptions (parsedToken, key, messageFormat) {
-            var value = parsedToken.options[key];
+            var value = parsedToken.options && parsedToken.options[key];
             value = getFormatElementContent(value);
             parsedToken.options[key] = parse(value, messageFormat.outputFormatter);
         }
