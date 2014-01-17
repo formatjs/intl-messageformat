@@ -39,10 +39,176 @@ describe('IntlMessageFormat', function () {
         expect(IntlMessageFormat).to.be.a('function');
     });
 
-    // PROTOTYPE
+    // STATIC
     describe('.__addLocaleData( [obj] )', function () {
         it('should respond to .__addLocaleData()', function () {
             expect(IntlMessageFormat).itself.to.respondTo('__addLocaleData');
+        });
+    });
+
+    describe('.parse( [messagePattern] )', function () {
+        it('should respond to .parse()', function () {
+            expect(IntlMessageFormat).itself.to.respondTo('parse');
+        });
+
+        it('should parse the pattern into an array', function () {
+            var i, len, pattern,
+                patterns = [
+                    {
+                        name: 'basic string',
+                        pattern: '{KAMEN} {RIDER} is {STRONGER} than you!',
+                        parsed: [
+                            '${KAMEN}',
+                            ' ',
+                            '${RIDER}',
+                            ' is ',
+                            '${STRONGER}',
+                            ' than you!',
+                        ]
+                    }, {
+                        name: 'basic plural',
+                        pattern: 'There {NUM_RIDERS, plural, one {is only one} other {are #}} kamen rider(s)',
+                        parsed: [
+                            'There ',
+                            {
+                                type: 'plural',
+                                valueName: 'NUM_RIDERS',
+                                options: {
+                                    one: 'is only one',
+                                    other: 'are ${#}'
+                                }
+                            },
+                            ' kamen rider(s)'
+                        ]
+                    }, {
+                        name: 'basic select',
+                        pattern: 'Kamen rider is {LEVEL, select, good {awesome} better {very awesome} best {awesome-possum} other {amaaazing}}!!',
+                        parsed: [
+                            'Kamen rider is ',
+                            {
+                                type: 'select',
+                                valueName: 'LEVEL',
+                                options: {
+                                    good: 'awesome',
+                                    better: 'very awesome',
+                                    best: 'awesome-possum',
+                                    other: 'amaaazing'
+                                }
+                            },
+                            '!!'
+                        ]
+                    }, {
+                        name: 'basic time',
+                        pattern: 'Today is {TIME, time, long}.',
+                        parsed: [
+                            'Today is ',
+                            {
+                                type: 'time',
+                                valueName: 'TIME',
+                                format: 'long'
+                            },
+                            '.'
+                        ]
+                    }, {
+                        name: 'basic time - defaulting',
+                        pattern: 'Today is {TIME, time}.',
+                        parsed: [
+                            'Today is ',
+                            {
+                                type: 'time',
+                                valueName: 'TIME',
+                                format: 'medium'
+                            },
+                            '.'
+                        ]
+                    }, {
+                        name: 'basic date',
+                        pattern: 'Today is {TIME, date, short}.',
+                        parsed: [
+                            'Today is ',
+                            {
+                                type: 'date',
+                                valueName: 'TIME',
+                                format: 'short'
+                            },
+                            '.'
+                        ]
+                    }, {
+                        name: 'basic date - defaulting',
+                        pattern: 'Today is {TIME, date}.',
+                        parsed: [
+                            'Today is ',
+                            {
+                                type: 'date',
+                                valueName: 'TIME',
+                                format: 'medium'
+                            },
+                            '.'
+                        ]
+                    }, {
+                        name: 'basic number',
+                        pattern: 'There are {POPULATION, number, integer} people in {CITY}.',
+                        parsed: [
+                            'There are ',
+                            {
+                                type: 'number',
+                                valueName: 'POPULATION',
+                                format: 'integer'
+                            },
+                            ' people in ',
+                            '${CITY}',
+                            '.'
+                        ]
+                    }, {
+                        name: 'complex pattern with string, plural, and select',
+                        pattern: '{TRAVELLERS} {TRAVELLER_COUNT, plural, one {est {GENDER, select, female {allée} other {allé}}} other {sont {GENDER, select, female {allées} other {allés}}}} à {CITY}.',
+                        parsed: [
+                            '${TRAVELLERS}',
+                            ' ',
+                            {
+                                type: 'plural',
+                                valueName: 'TRAVELLER_COUNT',
+                                options: {
+                                    one: [
+                                        'est ',
+                                        {
+                                            type: 'select',
+                                            valueName: 'GENDER',
+                                            options: {
+                                                female: 'allée',
+                                                other: 'allé'
+                                            }
+                                        }
+                                    ],
+                                    other: [
+                                        'sont ',
+                                        {
+                                            type: 'select',
+                                            valueName: 'GENDER',
+                                            options: {
+                                                female: 'allées',
+                                                other: 'allés'
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            ' à ',
+                            '${CITY}',
+                            '.'
+                        ]
+                    }
+                ];
+
+
+
+            for (i = 0, len = patterns.length; i < len; i++) {
+                pattern = patterns[i];
+                console.log(pattern.name);
+                expect(IntlMessageFormat.parse(pattern.pattern), pattern.name).to.deep.equal(pattern.parsed);
+            }
+
+
         });
     });
 
