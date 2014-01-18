@@ -725,31 +725,39 @@
     }
 
     /**
-     For each formatter, test it on the token in order
+     For each formatter, test it on the token in order. Exit early on first
+     token matched.
      @method parseToken
-     @param {String} token
-     @param {Number} index
      @param {Array} tokens
+     @param {Number} index
+     @return {String|Object} Parsed token or original token
      */
-    function parseToken (token, index, tokens) {
+    function parseToken (tokens, index) {
         var i, len;
 
         for (i = 0, len = FORMATTERS.length; i < len; i++) {
-            if (parseFormatTokens(FORMATTERS[i], i, tokens, index)) {
-                return true;
+            if (parseFormatTokens(FORMATTERS[i], tokens, index)) {
+                return tokens[index];
             }
         }
+
+        return tokens[index];
     }
 
     /**
+     Attempts to parse a token at the given index with the provided formatter.
+     If the token fails the `formatter.regex`, `false` is returned. Otherwise,
+     the token is parsed with `formatter.parse`. Then if the token contains
+     options due to the parsing process, it has each option processed. Then it
+     returns `true` alerting the caller the token was parsed.
+
      @method parseFormatTokens
      @param {Object} formatter
-     @param {Number} index
      @param {Array} tokens
      @param {Number} tokenIndex
      @return {Boolean}
      */
-    function parseFormatTokens (formatter, index, tokens, tokenIndex) {
+    function parseFormatTokens (formatter, tokens, tokenIndex) {
         var token = tokens[tokenIndex],
             match = token.match(formatter.regex),
             parsedToken,
@@ -761,6 +769,7 @@
             parsedToken = formatter.parse(token, match, formatter);
             tokens[tokenIndex] = parsedToken;
 
+            // if we have options, each option must be parsed
             if (parsedToken && parsedToken.options && typeof parsedToken.options === 'object') {
                 for (key in parsedToken.options) {
                     if (parsedToken.options.hasOwnProperty(key)) {
@@ -772,6 +781,8 @@
             for (i = 0, len = parsedKeys.length; i < len; i++) {
                 parseFormatOptions(parsedToken, parsedKeys[i], formatter);
             }
+
+            return true;
         }
 
         return !!match;
@@ -808,7 +819,7 @@
 
         for (i = 0, len = tokens.length; i < len; i++) {
             if (tokens[i].charAt(0) === '{') { // tokens must start with a {
-                parseToken(tokens[i], i, tokens);
+                tokens[i] = parseToken(tokens, i);
             }
         }
 
