@@ -828,8 +828,5 @@
 
     MessageFormat.parse = parse;
 
-
-
     return MessageFormat;
 });
-
