@@ -36,7 +36,7 @@
     "grunt-contrib-uglify": "~0.2.7",
     "istanbul": "~0.1.46",
     "mocha": "~1.15.1",
-    "reporter-file": "git://github.com/apipkin/reporter-file.git#master",
+    "reporter-file": "~0.0.1",
     "mockery": "~1.4.0",
     "intl": "~0.1.0"
   },
