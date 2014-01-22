@@ -220,10 +220,10 @@
     /**
      Formats pattern with supplied parameters.
      Dates, times and numbers are formatted in locale sensitive way.
-     @param {Array|Object} params
+     @param {Array|Object} data
      @return {String}
      */
-    MessageFormat.prototype.format = function (obj) {
+    MessageFormat.prototype.format = function (data) {
 
         var pattern = this.pattern,
             tokens,
@@ -231,8 +231,8 @@
             len,
             i;
 
-        if (typeof obj !== 'object') {
-            throw new ReferenceError('`format` expects the first argument to be an Object. ' + typeof obj + ' was found.');
+        if (typeof data !== 'object') {
+            throw new ReferenceError('`format` expects the first argument to be an Object. ' + typeof data + ' was found.');
         }
 
         // the pattern we have is an array, we need to stitch it together
@@ -242,7 +242,7 @@
             pattern = pattern.concat();
 
             // turn the array into a string
-            pattern = this._processArray.call(this, pattern, obj);
+            pattern = this._processTokens.call(this, pattern, data);
         }
 
         // make sure we have a string
@@ -262,9 +262,9 @@
                 // remove trailing }
                 key = key.substr(0, key.length - 1);
 
-                // replace the token with obj[key]
-                if (obj.hasOwnProperty(key)) {
-                    pattern = pattern.replace(tokens[i], obj[key]);
+                // replace the token with data[key]
+                if (data.hasOwnProperty(key)) {
+                    pattern = pattern.replace(tokens[i], data[key]);
                 }
             }
         }
@@ -343,41 +343,41 @@
      Processes an array to return a string back once it's located. Arrays are
      concatenated. Each item is also processed based on whether it is an
      object or an array.
-     @param {Array} arr
-     @param {Object} obj
+     @param {Array} tokens
+     @param {Object} data
      @return {String}
      */
-    MessageFormat.prototype._processArray = function (arr, obj) {
+    MessageFormat.prototype._processTokens = function (tokens, data) {
         var str = '',
-            valType,
-            val,
+            tokenType,
+            token,
             len,
             i;
 
         // parse through the array to get the appropriate string value for each index
-        for (i = 0, len = arr.length; i < len; i++) {
+        for (i = 0, len = tokens.length; i < len; i++) {
 
-            val = arr[i];
+            token = tokens[i];
 
             // If we don't already have a string, let's try to make it one
-            if (typeof val !== 'string') {
-                while (typeof val !== 'string') {
+            if (typeof token !== 'string') {
+                while (typeof token !== 'string') {
                     // let's find out what we are working with in the loop
-                    valType = Object.prototype.toString.call(val);
+                    tokenType = Object.prototype.toString.call(token);
 
-                    if (valType === '[object Array]') {
-                        val = this._processArray.call(this, val, obj);
-                    } else if (valType === '[object Object]') {
-                        val = this._processObject.call(this, val, obj);
+                    if (tokenType === '[object Array]') {
+                        token = this._processTokens.call(this, token, data);
+                    } else if (tokenType === '[object Object]') {
+                        token = this._processToken.call(this, token, data);
                     } else {
                         // not an array or object, let's cast it and move on
-                        val += '';
+                        token += '';
                     }
                 }
             }
 
             // concat our new value to the return string
-            str += val;
+            str += token;
         }
 
         return str;
@@ -390,28 +390,28 @@
      lookUp object.
 
      If the lookUp object returns a string, it will be sandwiched between
-     `obj.prefix` and `obj.postfix` if they exist.
+     `token.prefix` and `token.postfix` if they exist.
 
-     @param {Ojbect} obj
-     @param {Object} lookUp
+     @param {Ojbect} token
+     @param {Object} data
      @return {String|Array|Object}
      */
-    MessageFormat.prototype._processObject = function (obj, lookUp) {
-        var val = lookUp[obj.valueName],
+    MessageFormat.prototype._processToken = function (token, data) {
+        var val = data[token.valueName],
             valName = val,
             valType,
             formatterFn;
 
-        // our look up object isn't in the provided lookUp object
+        // our look up object isn't in the provided data object
         if (typeof val === 'undefined' || val === null) {
-            throw new ReferenceError('The valueName `' + obj.valueName + '` was not found.');
+            throw new ReferenceError('The valueName `' + token.valueName + '` was not found.');
         }
 
         // if we are dealing with plurals and we have a number, we need to
         // normalize the number's value based on the locale
-        if (obj.type === 'plural' && typeof val === 'number') {
-            if (obj.offset) {
-                val += obj.offset;
+        if (token.type === 'plural' && typeof val === 'number') {
+            if (token.offset) {
+                val += token.offset;
             }
 
             val = this._normalizeCount(val);
@@ -419,9 +419,9 @@
 
         // if we have an options property, we need the value from this object
         // as it relates to our value
-        if (obj.options) {
+        if (token.options) {
             // options should always fallback to an "other" option when not found
-            val = obj.options[val] || obj.options.other;
+            val = token.options[val] || token.options.other;
         }
 
         valType = typeof val;
@@ -437,16 +437,16 @@
             }
 
             // process with a formatter if one exists
-            if (obj.format) {
-                formatterFn = (typeof obj.format === 'function') ? obj.format : this.formatters[obj.format];
+            if (token.format) {
+                formatterFn = (typeof token.format === 'function') ? token.format : this.formatters[token.format];
 
                 if (formatterFn) {
-                    val = formatterFn.call(this, val, this.locale, obj);
+                    val = formatterFn.call(this, val, this.locale, token);
                 }
             }
 
             // sandwich
-            val = (obj.prefix || '') + val + (obj.postfix || '');
+            val = (token.prefix || '') + val + (token.postfix || '');
         }
 
         return val;
