@@ -385,9 +385,9 @@
 
 
     /**
-     Processes the Object based on the lookUp object. Each object should have
+     Processes the Object based on the data object. Each object should have
      a `valueName` property; this property is used to located the value in the
-     lookUp object.
+     data object.
 
      If the lookUp object returns a string, it will be sandwiched between
      `token.prefix` and `token.postfix` if they exist.
@@ -400,6 +400,7 @@
         var val = data[token.valueName],
             valName = val,
             valType,
+            formatterFnName,
             formatterFn;
 
         // our look up object isn't in the provided data object
@@ -424,29 +425,35 @@
             val = token.options[val] || token.options.other;
         }
 
-        valType = typeof val;
+        valType = Object.prototype.toString.call(val);
 
-        // if we have a string or number to return, we need to sandwich it
-        // with (pre|post)fix
-        if (valType === 'string' || valType === 'number') {
+        // anything that isn't an Object or Array should be formatted
+        // (if requested) and returned as a string
+        if (valType !== '[object Object]' && valType !== '[object Array]') {
 
             // strings should be checked for hash tokens
-            if (valType === 'string') {
+            if (valType === '[object String]') {
                 // We need to make sure we aren't doing a context look up `${#}`
                 val = val.replace('${#}', valName);
             }
 
             // process with a formatter if one exists
             if (token.format) {
-                formatterFn = (typeof token.format === 'function') ? token.format : this.formatters[token.format];
+                if (typeof token.format === 'function') {
+                    formatterFn = token.format;
+                } else {
+                    formatterFnName = (token.type && token.type !== 'custom') ? token.type + '_' : '';
+                    formatterFnName += token.format;
+                    formatterFn = this.formatters[formatterFnName];
+                }
 
                 if (formatterFn) {
-                    val = formatterFn.call(this, val, this.locale, token);
+                    val = formatterFn.call(this, val, this.locale, data);
                 }
             }
 
-            // sandwich
-            val = (token.prefix || '') + val + (token.postfix || '');
+            // ensure we have a string
+            val = val.toString();
         }
 
         return val;
