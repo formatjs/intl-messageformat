@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- 0.10
+- 0.1
 notifications:
   email:
     recipients:
@@ -15,5 +15,4 @@ addons:
 env:
   global:
   - SAUCE_USERNAME: drewfish
-  - SAUCE_ACCESS_KEY:
-      secure: Vzm5yrDVW66blqlVWUYVSmO3Qwmtg7RphRNGMYfx3hQy5jPi3ejlY0Cd2ecozz25DKaszyaCTGJ0OtmwdauMxY3Et2sQWPl2OtZzSx8B7ewkwY97Ja/AThCY3n9WqBRuT3q9eVD9Yxi/VWhWELNcwu+N8srINlQb2uACIt98eFc=
+  - secure: VpOyvozBCLjDUN1oKzQJhsOEUwJ3vxXAwhvPqrCQTzdOjzKwurx+CvvEizFSE8jS4TbRB1B7USgMBGyiETAoW+ep2bC3uDUIQHX1A3+m/cyjLbcGzaoVC4zZUXYZbsStpb0DUhD+rzH0D6IuWulNzhnQCHDMi3a6q7QhJyLNF1k=
