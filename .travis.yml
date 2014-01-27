@@ -1,14 +1,18 @@
 language: node_js
 node_js:
-  - 0.10
+- 0.10
 notifications:
   email:
     recipients:
-      - mojito-next@yahoo-inc.com
+    - mojito-next@yahoo-inc.com
     on_success: change
     on_failure: always
 addons:
   sauce_connect:
     username: drewfish
     access_key:
-      secure: 'Wah4sN+/YCy4pgeDJ9D/k8dg4dSygGldtvg+9FimvdYciBy1PfDL/tMX64RnpdrYR06JmM4T4M/Epawwz5P2SNVvtRfUe53NMJlImay7Sc+1P6psxVzRsTf2C7WJ4Lg7tzIT4sqA5YBUvdyGIsaoY1CyQWzEfFmFp8Z7rFOgSRw='
+      secure: Wah4sN+/YCy4pgeDJ9D/k8dg4dSygGldtvg+9FimvdYciBy1PfDL/tMX64RnpdrYR06JmM4T4M/Epawwz5P2SNVvtRfUe53NMJlImay7Sc+1P6psxVzRsTf2C7WJ4Lg7tzIT4sqA5YBUvdyGIsaoY1CyQWzEfFmFp8Z7rFOgSRw=
+env:
+  SAUCE_USERNAME: drewfish
+  SAUCE_ACCESS_KEY:
+    secure: HeQ9r0u7XwTNtijqYc9beVV6cC5khAfQ+Z2E5i4scqM9ikx03RkysWjO9EfIVEvSMgvHW7kncmHe0W4o9aV1Io/yxe5ALTTJGmZKAepbV4Hpp2eevzs7IY9uQZdBQJWFeM/ET+phGY6dhHUfEG45Zdid1ubPRvCOgnrN3LbQ1qU=
