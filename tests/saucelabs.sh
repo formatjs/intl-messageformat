@@ -1,6 +1,6 @@
 #!/bin/bash
 
-env | grep -i sauce
+env | sort
 
 
 if [[ "x" == "x$SAUCE_USERNAME" ]]; then
