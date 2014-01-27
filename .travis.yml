@@ -14,6 +14,5 @@ addons:
       secure: Wah4sN+/YCy4pgeDJ9D/k8dg4dSygGldtvg+9FimvdYciBy1PfDL/tMX64RnpdrYR06JmM4T4M/Epawwz5P2SNVvtRfUe53NMJlImay7Sc+1P6psxVzRsTf2C7WJ4Lg7tzIT4sqA5YBUvdyGIsaoY1CyQWzEfFmFp8Z7rFOgSRw=
 env:
   global:
-    SAUCE_USERNAME: drewfish
-    SAUCE_ACCESS_KEY:
-      secure: KAuc+NYvL5GSJAmt7oiB19bn3KvgTPDj3VyFUVyWlkTSRGqSE5KScYsDtVcxz9YkkeYd1WQ5sB5M7ZyjjZBekqfZsbiAoMJLURrm9j/477KISACvS5o6z6jsDXikumE9ak4TzJd1b4sKpcTHJ42BbnXrqdEuN13VfMYbBqYuoIM=
+  - SAUCE_USERNAME: drewfish
+  - secure: RlTQ87HLfhCLzAleqBXxhPzFbqO/hHKEhr5xSJXLShDOFNKuzryr+jFcMvf5XWP5WBpd09smxpmWlgvD8OK9R3ZBs4t3AYMgIO4+M2Z+amPuW8Yxt5Oa/1BhKxEzjDtNAYRKAplHfoT+klnzvh1xiCIZWnJQEqgPEJrSjbWaMUw=
