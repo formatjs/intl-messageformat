@@ -1,8 +1,5 @@
 #!/bin/bash
 
-env | sort
-
-
 if [[ "x" == "x$SAUCE_USERNAME" ]]; then
     echo $0 "is missing env var SAUCE_USERNAME"
     exit 1
