@@ -295,7 +295,7 @@
 
                     // Early exit and special handling for plural options with a
                     // "${#}" token. These options will have this token replaced
-                    // with NumberPart wrap with optional prefix and suffix.
+                    // with NumberFormat wrap with optional prefix and suffix.
                     if (type === 'plural' && typeof option === 'string' &&
                             option.indexOf('${#}') >= 0) {
 
@@ -303,7 +303,10 @@
 
                         optionsParts[key] = [
                             option[1], // prefix
-                            new NumberPart(valueName, locales),
+                            {
+                                valueName: valueName,
+                                format   : new Intl.NumberFormat(locales).format
+                            },
                             option[2]  // suffix
                         ];
 
