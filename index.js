@@ -85,6 +85,10 @@
             pattern = MessageFormat.__parse(pattern);
         }
 
+        if (!(pattern && typeof pattern.length === 'number')) {
+            throw new TypeError('A pattern must be provided as a String or Array.');
+        }
+
         // Creates a new object with the default formats as its prototype, then
         // it's extended with the `formats` provided to the constructor.
         formats = extend(objCreate(MessageFormat.FORMATS), formats);
