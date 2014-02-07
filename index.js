@@ -82,7 +82,7 @@
     function MessageFormat(pattern, locales, formats) {
         // Parse string messages into a tokenized JSON structure for traversal.
         if (typeof pattern === 'string') {
-            pattern = parse(pattern);
+            pattern = MessageFormat.__parse(pattern);
         }
 
         // Creates a new object with the default formats as its prototype, then
@@ -195,6 +195,9 @@
             MessageFormat.defaultLocale = locale;
         }
     }});
+
+    // Defines `__parse()` static method as an exposed private.
+    defineProperty(MessageFormat, '__parse', {value: parse});
 
     // Define public `defaultLocale` property which is set when the first bundle
     // of locale data is added.
