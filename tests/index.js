@@ -8,12 +8,9 @@
 /*global describe,it,beforeEach */
 'use strict';
 
-
 var chai,
     expect,
-    intl,
     IntlMessageFormat;
-
 
 // This oddity is so that this file can be used for both client-side and
 // server-side testing.  (On the client we've already loaded chai and
@@ -22,17 +19,20 @@ if ('function' === typeof require) {
 
     chai = require('chai');
 
-    IntlMessageFormat = require('../index.js');
-
     if (typeof global.Intl === 'undefined'){
         global.Intl = require('intl');
     }
 
+    IntlMessageFormat = require('../index.js');
+
     require('../locale-data/en.js');
+    require('../locale-data/fr.js');
+    require('../locale-data/ru.js');
     require('../locale-data/ar.js');
     require('../locale-data/pl.js');
 
 }
+
 expect = chai.expect;
 
 describe('IntlMessageFormat', function () {
@@ -42,244 +42,33 @@ describe('IntlMessageFormat', function () {
     });
 
     // STATIC
+
     describe('.__addLocaleData( [obj] )', function () {
         it('should respond to .__addLocaleData()', function () {
             expect(IntlMessageFormat).itself.to.respondTo('__addLocaleData');
         });
     });
 
-    describe('.parse( [messagePattern] )', function () {
-        it('should respond to .parse()', function () {
-            expect(IntlMessageFormat).itself.to.respondTo('parse');
-        });
-
-        it('should fail with an imbalanced bracket', function () {
-            try {
-                IntlMessageFormat.parse('{imbalanced} tokens}');
-            } catch (e) {
-                var err = new Error('Imbalanced bracket detected at index 19 for message "{imbalanced} tokens}"');
-                expect(err.toString()).to.equal(e.toString());
-            }
-        });
-
-        it('should fail if the brackets are not closed properly', function () {
-            try {
-                IntlMessageFormat.parse('{{hello}');
-            } catch (e) {
-                var err = new Error('Brackets were not properly closed: {{hello}');
-                expect(err.toString()).to.equal(e.toString());
-            }
-        });
-
-        it('should fail if options tokens are not supplied in pairs', function () {
-            try {
-                IntlMessageFormat.parse('{FOO, plural, one {bar} other}');
-            } catch (e) {
-                var err = new Error('Options must come in pairs: one, {bar}, other');
-                expect(err.toString()).to.equal(e.toString());
-            }
-        });
-
-        it('should fail if a default `other` option is not supplied', function () {
-            try {
-                IntlMessageFormat.parse('{Foo, plural, one {bar} few {baz}}');
-            } catch (e) {
-                var err = new Error('Options must include default \"other\" option: one, {bar}, few, {baz}');
-                expect(err.toString()).to.equal(e.toString());
-            }
-        });
-
-        it('should parse the pattern into an array', function () {
-            var i, len, pattern,
-                patterns = [
-                    {
-                        name: 'basic string',
-                        pattern: '{KAMEN} {RIDER} is {STRONGER} than you!',
-                        parsed: [
-                            '${KAMEN}',
-                            ' ',
-                            '${RIDER}',
-                            ' is ',
-                            '${STRONGER}',
-                            ' than you!',
-                        ]
-                    }, {
-                        name: 'basic plural',
-                        pattern: 'There {NUM_RIDERS, plural, one {is only one} other {are #}} kamen rider(s)',
-                        parsed: [
-                            'There ',
-                            {
-                                type: 'plural',
-                                valueName: 'NUM_RIDERS',
-                                options: {
-                                    one: 'is only one',
-                                    other: 'are ${#}'
-                                }
-                            },
-                            ' kamen rider(s)'
-                        ]
-                    }, {
-                        name: 'basic select',
-                        pattern: 'Kamen rider is {LEVEL, select, good {awesome} better {very awesome} best {awesome-possum} other {amaaazing}}!!',
-                        parsed: [
-                            'Kamen rider is ',
-                            {
-                                type: 'select',
-                                valueName: 'LEVEL',
-                                options: {
-                                    good: 'awesome',
-                                    better: 'very awesome',
-                                    best: 'awesome-possum',
-                                    other: 'amaaazing'
-                                }
-                            },
-                            '!!'
-                        ]
-                    }, {
-                        name: 'basic time',
-                        pattern: 'Today is {TIME, time, long}.',
-                        parsed: [
-                            'Today is ',
-                            {
-                                type: 'time',
-                                valueName: 'TIME',
-                                format: 'long'
-                            },
-                            '.'
-                        ]
-                    }, {
-                        name: 'basic time - defaulting',
-                        pattern: 'Today is {TIME, time}.',
-                        parsed: [
-                            'Today is ',
-                            {
-                                type: 'time',
-                                valueName: 'TIME',
-                                format: 'medium'
-                            },
-                            '.'
-                        ]
-                    }, {
-                        name: 'basic date',
-                        pattern: 'Today is {TIME, date, short}.',
-                        parsed: [
-                            'Today is ',
-                            {
-                                type: 'date',
-                                valueName: 'TIME',
-                                format: 'short'
-                            },
-                            '.'
-                        ]
-                    }, {
-                        name: 'basic date - defaulting',
-                        pattern: 'Today is {TIME, date}.',
-                        parsed: [
-                            'Today is ',
-                            {
-                                type: 'date',
-                                valueName: 'TIME',
-                                format: 'medium'
-                            },
-                            '.'
-                        ]
-                    }, {
-                        name: 'basic number',
-                        pattern: 'There are {POPULATION, number, integer} people in {CITY}.',
-                        parsed: [
-                            'There are ',
-                            {
-                                type: 'number',
-                                valueName: 'POPULATION',
-                                format: 'integer'
-                            },
-                            ' people in ',
-                            '${CITY}',
-                            '.'
-                        ]
-                    }, {
-                        name: 'complex pattern with string, plural, and select',
-                        pattern: '{TRAVELLERS} {TRAVELLER_COUNT, plural, one {est {GENDER, select, female {allée} other {allé}}} other {sont {GENDER, select, female {allées} other {allés}}}} à {CITY}.',
-                        parsed: [
-                            '${TRAVELLERS}',
-                            ' ',
-                            {
-                                type: 'plural',
-                                valueName: 'TRAVELLER_COUNT',
-                                options: {
-                                    one: [
-                                        'est ',
-                                        {
-                                            type: 'select',
-                                            valueName: 'GENDER',
-                                            options: {
-                                                female: 'allée',
-                                                other: 'allé'
-                                            }
-                                        }
-                                    ],
-                                    other: [
-                                        'sont ',
-                                        {
-                                            type: 'select',
-                                            valueName: 'GENDER',
-                                            options: {
-                                                female: 'allées',
-                                                other: 'allés'
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            ' à ',
-                            '${CITY}',
-                            '.'
-                        ]
-                    }
-                ];
-
-
-
-            for (i = 0, len = patterns.length; i < len; i++) {
-                pattern = patterns[i];
-                expect(IntlMessageFormat.parse(pattern.pattern), pattern.name).to.deep.equal(pattern.parsed);
-            }
-
-
-        });
-    });
-
     // CONSTRUCTOR PROPERTIES
 
-    describe('#locale', function () {
+    describe('#_locale', function () {
         var msgFmt;
 
-        it('should be null', function () {
-            msgFmt = new IntlMessageFormat();
+        it('should be a default value', function () {
+            msgFmt = new IntlMessageFormat('');
             /*jshint expr:true */
-            expect(msgFmt.locale).to.be.null;
+            expect(msgFmt._locale).to.equal('en');
         });
 
-        it('should be equal to the second parameter', function () {
-            msgFmt = new IntlMessageFormat(null, 'en-US');
-            expect(msgFmt.locale).to.equal('en-US');
-        });
-
-        it('should throw an error if the second parameter is a space', function () {
-            try {
-                msgFmt = new IntlMessageFormat(null, ' ');
-                // should not get here
-                expect(false, 'IntlMessageFormat should have thrown').to.equal(true);
-            } catch (e) {
-                var err = new RangeError('Invalid language tag.');
-                expect(e.toString()).to.equal(err.toString());
-            }
+        it('should be equal to the second parameter\'s language code', function () {
+            msgFmt = new IntlMessageFormat('', 'en-US');
+            expect(msgFmt._locale).to.equal('en');
         });
 
     });
 
     describe('#_pluralLocale', function () {
-        var msgFmt = new IntlMessageFormat();
+        var msgFmt = new IntlMessageFormat('');
 
         it('should be undefined', function () {
             /*jshint expr:true */
@@ -288,7 +77,7 @@ describe('IntlMessageFormat', function () {
     });
 
     describe('#_pluralFunc', function () {
-        var msgFmt = new IntlMessageFormat();
+        var msgFmt = new IntlMessageFormat('');
 
         it('should be undefined', function () {
             /*jshint expr:true */
@@ -298,87 +87,50 @@ describe('IntlMessageFormat', function () {
 
     describe('#pattern', function () {
         it('should be undefined', function () {
-            var msgFmt = new IntlMessageFormat();
+            var msgFmt = new IntlMessageFormat('');
             /*jshint expr:true */
             expect(msgFmt.pattern).to.not.exist;
         });
 
         it('should be undefined when first parameter is ommited', function () {
-            var msgFmt = new IntlMessageFormat();
+            var msgFmt = new IntlMessageFormat('');
             /*jshint expr:true */
             expect(msgFmt.pattern).to.not.exist;
         });
 
         it('should match the first parameter when it is an array', function () {
-            var msgFmt = new IntlMessageFormat(['My name is ', { valueName: 'NAME' }]);
+            var msgFmt = new IntlMessageFormat('My name is {NAME}' );
 
-            expect(msgFmt.pattern).to.be.an('array');
-            expect(msgFmt.pattern.length).to.equal(2);
-            expect(msgFmt.pattern[0]).to.equal('My name is ');
-            expect(msgFmt.pattern[1]).to.be.an('object');
+            expect(msgFmt._pattern).to.be.an('array');
+            expect(msgFmt._pattern.length).to.equal(2);
+            expect(msgFmt._pattern[0]).to.equal('My name is ');
+            expect(msgFmt._pattern[1]).to.be.an('object');
             /*jshint expr:true */
-            expect(msgFmt.pattern[1].valueName).to.exist;
-            expect(msgFmt.pattern[1].valueName).to.equal('NAME');
+            expect(msgFmt._pattern[1].valueName).to.exist;
+            expect(msgFmt._pattern[1].valueName).to.equal('NAME');
         });
 
         it('should match the first parameter parsed into an array when it is a string', function () {
             var msgFmt = new IntlMessageFormat('My name is {NAME}');
 
-            expect(msgFmt.pattern).to.be.an('array');
-            expect(msgFmt.pattern.length).to.equal(2);
-            expect(msgFmt.pattern[0]).to.equal('My name is ');
-            expect(msgFmt.pattern[1]).to.be.a('string');
-            expect(msgFmt.pattern[1]).to.equal('${NAME}');
+            expect(msgFmt._pattern).to.be.an('array');
+            expect(msgFmt._pattern.length).to.equal(2);
+            expect(msgFmt._pattern[0]).to.equal('My name is ');
+            expect(msgFmt._pattern[1]).to.be.an('object');
+            /*jshint expr:true */
+            expect(msgFmt._pattern[1].valueName).to.exist;
+            expect(msgFmt._pattern[1].valueName).to.equal('NAME');
         });
 
     });
 
-    describe('#formatters', function () {
-        it('should be an empty object without a third parameter', function () {
-            var msgFmt = new IntlMessageFormat();
-
-            expect(msgFmt.formatters).to.be.an('object');
-
-
-            // Randomly test for default formatters to exist
-            expect(msgFmt.formatters.number_integer).to.be.a('function');
-            expect(msgFmt.formatters.date_short).to.be.a('function');
-            expect(msgFmt.formatters.time_long).to.be.a('function');
-        });
-
-        it('should maintain the default formatters', function () {
-            var msgFmtA = new IntlMessageFormat(null, null, {
-                    foo: function (val) {
-                        return 'foo: ' + val;
-                    }
-                }),
-                msgFmtB;
-
-
-            expect(msgFmtA.formatters.foo).to.be.a('function');
-            expect(msgFmtA.formatters.time_long).to.be.a('function');
-            expect(msgFmtA.formatters.foo('bar')).to.equal('foo: bar');
-
-
-
-
-            msgFmtB = new IntlMessageFormat();
-
-            /*jshint expr:true*/
-            expect(msgFmtB.formatters.foo).to.not.exist;
-            /*jshint expr:true*/
-            expect(msgFmtB.formatters.time_long).to.exist;
-        });
-
-    });
-
-    // CONSTRUCTOR METHODS
+    // INSTANCE METHODS
 
     describe('#resolvedOptions( )', function () {
         var msgFmt;
 
         beforeEach(function () {
-            msgFmt = new IntlMessageFormat();
+            msgFmt = new IntlMessageFormat('');
         });
 
         it('should be a function', function () {
@@ -398,29 +150,16 @@ describe('IntlMessageFormat', function () {
                 }
             }
 
-            expect(pCount).to.equal(0);
+            expect(pCount).to.equal(1);
         });
     });
 
     describe('#format( [object] )', function () {
-        var msgFmt;
-
         it('should be a function', function () {
-            msgFmt = new IntlMessageFormat();
+            var msgFmt = new IntlMessageFormat('');
             expect(msgFmt.format).to.be.a('function');
             expect(msgFmt).to.respondTo('format');
         });
-
-        it('should throw an error when no parameter is passed', function () {
-            msgFmt = new IntlMessageFormat();
-            try {
-                msgFmt.format();
-            } catch (e) {
-                var err = new ReferenceError('`format` expects the first argument to be an Object. undefined was found.');
-                expect(err.toString()).to.equal(e.toString());
-            }
-        });
-
     });
 
     describe('using a string pattern', function () {
@@ -446,86 +185,13 @@ describe('IntlMessageFormat', function () {
             expect(m).to.equal('My name is Anthony Pipkin.');
         });
 
-        it('should process an argument with a value formatter', function () {
-            var msgFmt, m;
-
-            msgFmt = new IntlMessageFormat('Test formatter d: {num, d}', null, {
-                    d: function (val, locale) {
-                        return +val;
-                    }
-                }, 'en-US');
-
-            m = msgFmt.format({
-                num: '010'
-            });
-
-            expect(m).to.equal('Test formatter d: 10');
-        });
-
-        it('should not fail if the formatter is non existant', function () {
-            var msgFmt, m;
-
-            msgFmt = new IntlMessageFormat('Test formatter foo: {NUM, foo}', null, {
-                    d: function (val, locale) {
-                        return +val;
-                    }
-                }, 'en-US');
-
-            m = msgFmt.format({
-                NUM: '010'
-            });
-
-            expect(m).to.equal('Test formatter foo: 010');
-        });
-
-        it('should not process inherited formatters', function () {
-            var msg, m,
-                Formatters = function () {
-                    this.d = function (val, locale) {
-                        return val + '030';
-                    };
-                },
-                CustomFormatters = function () {
-                    this.f = function (val, locale) {
-                        return val + '080';
-                    };
-                };
-
-            CustomFormatters.prototype = Formatters;
-            CustomFormatters.prototype.constructor = CustomFormatters;
-
-
-            msg = new IntlMessageFormat('d: {num, d} / f: {num, f}', 'en-US', new CustomFormatters());
-
-            m = msg.format({
-                num: 0
-            });
-
-            expect(m).to.equal('d: 0 / f: 0080');
-        });
-
-        it('should work when the pattern is replaced', function () {
-           var msg, m;
-
-            msg = new IntlMessageFormat('{NAME} {FORMULA}', 'en-US');
-
-            msg.pattern = '{FORMULA} {NAME}';
-
-            m = msg.format({
-                NAME: 'apipkin'
-            });
-
-            expect(m).to.equal('{FORMULA} apipkin');
-
-        });
-
     });
 
     describe('using an Array pattern', function () {
         it('should concatenate the Array', function () {
             var msgFmt, m;
 
-            msgFmt = new IntlMessageFormat(['I have ', 2, ' cars.']);
+            msgFmt = new IntlMessageFormat(['I have ', '2', ' cars.']);
 
             // pass an object to prevent throwing
             m = msgFmt.format({});
@@ -534,96 +200,44 @@ describe('IntlMessageFormat', function () {
         });
 
         it ('should throw an error if the format object does not contain an argument that is replaced' , function () {
-            try {
-                var msgFmt = new IntlMessageFormat(['I have ', { valueName: 'COLOR' }, ' cars.'], 'en-US'),
+            function formatWithMissingValue() {
+                var msgFmt = new IntlMessageFormat([
+                    'I have ',
+                    {
+                        type     : 'number',
+                        valueName: 'COUNT'
+                    },
+                    ' cars.'
+                ], 'en-US');
 
-                    m = msgFmt.format({
-                        color: 'blue'
-                    });
-
-                // should not get here
-                expect(false, 'IntlMessageFormat should have thrown').to.equal(true);
-
-            } catch (e) {
-                var err = new ReferenceError('The valueName `COLOR` was not found.');
-                expect(e.toString()).to.equal(err.toString());
+                return msgFmt.format({count: 6});
             }
-        });
 
-        it('should concatenate an Array and process arguments afterwards', function () {
-            var msgFmt, m;
-
-            msgFmt = new IntlMessageFormat(['{', 'company', '}', ' {', 'verb' ,'}.']);
-
-            m = msgFmt.format({
-                company: 'Yahoo',
-                verb: 'rocks'
-            });
-
-            expect(m).to.equal('Yahoo rocks.');
+            expect(formatWithMissingValue).to.throw(Error);
         });
 
         it ('should process plural argument types', function () {
             var msgFmt, m;
 
-            msgFmt = new IntlMessageFormat(['Some text before ', {
-                    type: 'plural',
+            msgFmt = new IntlMessageFormat([
+                'Some text before ',
+                {
+                    type     : 'plural',
                     valueName: 'NUM_PEOPLE',
                     options: {
-                        one: 'one',
-
-                        few: 'few',
-
+                        one  : 'one',
+                        few  : 'few',
                         other: 'Some messages for the default'
                     }
-                }, ' and text after']);
+                },
+                ' and text after'
+            ]);
 
             m = msgFmt.format({
                 NUM_PEOPLE: 20
             });
 
-            expect(m).to.equal("Some text before Some messages for the default and text after");
-        });
-
-        it('should process a plural argument type with an offset value', function () {
-            var msgFmt, m;
-            msgFmt = new IntlMessageFormat(['Some text before ', {
-                    type: 'plural',
-                    valueName: 'NUM_PEOPLE',
-                    offset: 1,
-                    options: {
-                        one: 'one',
-
-                        few: 'few',
-
-                        other: 'Some messages for the default'
-                    }
-                }, ' and text after'],
-                    'pl'    // this has the "few" rule that we need
-                );
-
-            m = msgFmt.format({
-                NUM_PEOPLE: 1   // offset will move this to "2" so that the "few" group is used
-            });
-
-            expect(m).to.equal("Some text before few and text after");
-        });
-
-        it('should process an argument with a value formatter provided in an argument object', function () {
-            var msgFmt, m;
-
-            msgFmt = new IntlMessageFormat([{
-                    valueName: 'ANIMAL',
-                    format: function (val, locale) {
-                        return val.toString().split('').reverse().join('');
-                    }
-                }], 'en-US');
-
-            m = msgFmt.format({
-                ANIMAL: 'aardvark'
-            });
-
-            expect(m).to.equal('kravdraa');
+            expect(m).to.equal('Some text before Some messages for the default and text after');
         });
     });
 
@@ -693,17 +307,17 @@ describe('IntlMessageFormat', function () {
     describe('and changing the locale', function () {
         var simple = {
                 en: [
-                    { valueName: 'NAME' },
+                    '${NAME}',
                     ' went to ',
-                    { valueName: 'CITY' },
+                    '${CITY}',
                     '.'
                 ],
 
                 fr: [
-                    { valueName: 'NAME' },
+                    '${NAME}',
                     ' est ',
                     {
-                        type: 'gender',
+                        type: 'select',
                         valueName: 'GENDER',
                         options: {
                             female: 'allée',
@@ -711,7 +325,7 @@ describe('IntlMessageFormat', function () {
                         }
                     },
                     ' à ',
-                    { valueName: 'CITY' },
+                    '${CITY}',
                     '.'
                 ]
             },
@@ -720,13 +334,13 @@ describe('IntlMessageFormat', function () {
                 en: '{TRAVELLERS} went to {CITY}.',
 
                 fr: [
-                    '{TRAVELLERS}',
+                    '${TRAVELLERS}',
                     {
                         type: 'plural',
                         valueName: 'TRAVELLER_COUNT',
                         options: {
                             one: [' est ', {
-                                type: 'gender',
+                                type: 'select',
                                 valueName: 'GENDER',
                                 options: {
                                     female: 'allée',
@@ -734,7 +348,7 @@ describe('IntlMessageFormat', function () {
                                 }
                             }],
                             other: [' sont ', {
-                                type: 'gender',
+                                type: 'select',
                                 valueName: 'GENDER',
                                 options: {
                                     female: 'allées',
@@ -744,7 +358,7 @@ describe('IntlMessageFormat', function () {
                         }
                     },
                     ' à ',
-                    '{CITY}',
+                    '${CITY}',
                     '.'
                 ]
             },
@@ -776,35 +390,27 @@ describe('IntlMessageFormat', function () {
 
         it('should format message en-US simple with different objects', function () {
             var msgFmt = new IntlMessageFormat(simple.en, 'en-US');
-
             expect(msgFmt.format(maleObj)).to.equal('Tony went to Paris.');
-
             expect(msgFmt.format(femaleObj)).to.equal('Jenny went to Paris.');
         });
 
 
         it('should format message fr-FR simple with different objects', function () {
             var msgFmt = new IntlMessageFormat(simple.fr, 'fr-FR');
-
             expect(msgFmt.format(maleObj)).to.equal('Tony est allé à Paris.');
-
             expect(msgFmt.format(femaleObj)).to.equal('Jenny est allée à Paris.');
         });
 
         it('should format message en-US complex with different objects', function () {
             var msgFmt = new IntlMessageFormat(complex.en, 'en-US');
-
             expect(msgFmt.format(maleTravelers)).to.equal('Lucas, Tony and Drew went to Paris.');
-
             expect(msgFmt.format(femaleTravelers)).to.equal('Monica went to Paris.');
         });
 
 
         it('should format message fr-FR complex with different objects', function () {
             var msgFmt = new IntlMessageFormat(complex.fr, 'fr-FR');
-
             expect(msgFmt.format(maleTravelers)).to.equal('Lucas, Tony and Drew sont allés à Paris.');
-
             expect(msgFmt.format(femaleTravelers)).to.equal('Monica est allée à Paris.');
         });
     });
@@ -839,13 +445,9 @@ describe('IntlMessageFormat', function () {
             var msgFmt = new IntlMessageFormat(messages.en, 'en-US');
 
             expect(msgFmt.format({COMPANY_COUNT: 0})).to.equal('0 companies published new books.');
-
             expect(msgFmt.format({COMPANY_COUNT: 1})).to.equal('One company published new books.');
-
             expect(msgFmt.format({COMPANY_COUNT: 2})).to.equal('2 companies published new books.');
-
             expect(msgFmt.format({COMPANY_COUNT: 5})).to.equal('5 companies published new books.');
-
             expect(msgFmt.format({COMPANY_COUNT: 10})).to.equal('10 companies published new books.');
         });
 
@@ -853,258 +455,75 @@ describe('IntlMessageFormat', function () {
             var msgFmt = new IntlMessageFormat(messages.ru, 'ru-RU');
 
             expect(msgFmt.format({COMPANY_COUNT: 0})).to.equal('0 компаний опубликовали новые книги.');
-
             expect(msgFmt.format({COMPANY_COUNT: 1})).to.equal('Одна компания опубликовала новые книги.');
-
             expect(msgFmt.format({COMPANY_COUNT: 2})).to.equal('2 компаний опубликовали новые книги.');
-
             expect(msgFmt.format({COMPANY_COUNT: 5})).to.equal('5 компаний опубликовали новые книги.');
-
             expect(msgFmt.format({COMPANY_COUNT: 10})).to.equal('10 компаний опубликовали новые книги.');
         });
     });
 
     describe('with empty language tags', function () {
         it('should fail and throw an error', function () {
-            try {
-                var msgFmt = new IntlMessageFormat('{NAME}', " ");
-            } catch (e) {
-                var err = new RangeError('Invalid language tag.');
-                expect(e.toString()).to.equal(err.toString());
+            function createWithInvalidLocale() {
+                return new IntlMessageFormat('{NAME}', ' ');
             }
+
+            expect(createWithInvalidLocale).to.throw(Error);
         });
     });
 
     describe('arguments with', function () {
 
         describe('no spaces', function() {
-            var msg = new IntlMessageFormat("{STATE}"),
-                emptyErr = new ReferenceError('`format` expects the first argument to be an Object. undefined was found.'),
-                typeErr = new TypeError("Cannot read property 'STATE' of undefined"),
-                refErr = new ReferenceError("The valueName `STATE` was not found."),
-                state = 'Missouri',
-                m;
-
-            it('should fail when the format object is not provided', function () {
-                try {
-                    m = msg.format();
-                } catch (e) {
-                    expect(e.toString()).to.equal(emptyErr.toString());
-                }
-            });
+            var msg   = new IntlMessageFormat('{STATE}'),
+                state = 'Missouri';
 
             it('should fail when the argument in the pattern is not provided', function () {
-                try {
-                    m = msg.format({ FOO: state });
-                } catch (e) {
-                    expect(e.toString()).to.equal(refErr.toString());
-                }
+                expect(msg.format).to.throw(Error);
             });
 
-            it("should fail when the argument in the pattern has a typo", function () {
-                try {
-                    m = msg.format({ "ST ATE": state });
-                } catch (e) {
-                    expect(e.toString()).to.equal(refErr.toString());
+            it('should fail when the argument in the pattern has a typo', function () {
+                function formatWithValueNameTypo() {
+                    return msg.format({'ST ATE': state});
                 }
+
+                expect(formatWithValueNameTypo).to.throw(Error);
             });
 
-            it("should succeed when the argument is correct", function () {
-                m = msg.format({ STATE: state });
-                expect(m).to.equal(state);
+            it('should succeed when the argument is correct', function () {
+                expect(msg.format({ STATE: state })).to.equal(state);
             });
         });
 
         describe('a space', function() {
-            var msg,
-                rangeErr = new RangeError('No tokens were provided.'),
-                state = 'Missouri',
-                m;
-
             it('should return the same string as no tokens are discovered', function () {
-                msg = new IntlMessageFormat("{ST ATE}");
-                m = msg.format({
-                    "ST ATE": state
-                });
-
-                expect(m).to.equal('{ST ATE}');
+                expect(new IntlMessageFormat('{ST ATE}').format({'ST ATE': 'Missouri'})).to.equal('{ST ATE}');
             });
         });
 
         describe('a numeral', function() {
-            var msg = new IntlMessageFormat("{ST1ATE}"),
-                emptyErr = new ReferenceError('`format` expects the first argument to be an Object. undefined was found.'),
-                typeErr = new TypeError("Cannot read property 'ST1ATE' of undefined"),
-                refErr = new ReferenceError("The valueName `ST1ATE` was not found."),
-                state = 'Missouri',
-                m;
-
-            it('should fail when the format object is not provided', function () {
-                try {
-                    m = msg.format();
-                } catch (e) {
-                    expect(e.toString()).to.equal(emptyErr.toString());
-                }
-            });
+            var msg   = new IntlMessageFormat('{ST1ATE}'),
+                state = 'Missouri';
 
             it('should fail when the argument in the pattern is not provided', function () {
-                try {
-                    m = msg.format({ FOO: state });
-                } catch (e) {
-                    expect(e.toString()).to.equal(refErr.toString());
+                function formatWithMissingValue() {
+                    return msg.format({ FOO: state });
                 }
+
+                expect(formatWithMissingValue).to.throw(Error);
             });
 
-            it("should fail when the argument in the pattern has a typo", function () {
-                try {
-                    m = msg.format({ "ST ATE": state });
-                } catch (e) {
-                    expect(e.toString()).to.equal(refErr.toString());
+            it('should fail when the argument in the pattern has a typo', function () {
+                function formatWithMissingValue() {
+                    msg.format({ 'ST ATE': state });
                 }
+
+                expect(formatWithMissingValue).to.throw(Error);
             });
 
-            it("should succeed when the argument is correct", function () {
-                m = msg.format({ ST1ATE: state });
-                expect(m).to.equal(state);
+            it('should succeed when the argument is correct', function () {
+                expect(msg.format({ ST1ATE: state })).to.equal(state);
             });
         });
     });
-
-    /*
-    describe('formatting patterns with formatters', function () {
-        it('should format numbers into integers', function () {
-            // {NUMBER, number, integer}
-            var msgFmt = new IntlMessageFormat("{NUMBER, number, integer}", 'en-US'),
-                m = msgFmt.format({ NUMBER: 30000 });
-
-            expect(m).to.equal('30,000');
-        });
-
-        it('should format numbers into currency', function () {
-            // {NUMBER, number, currency}
-            var msgFmt = new IntlMessageFormat("{NUMBER, number, currency}", 'en-US'),
-                m = msgFmt.format({
-                    NUMBER: 30000,
-                    currency: 'USD'
-                });
-
-            expect(m, 'as `currency`').to.equal('$30,000.00');
-
-            m = msgFmt.format({
-                NUMBER: 30000,
-                CURRENCY: 'USD'
-            });
-
-            expect(m, 'as `CURRENCY`').to.equal('$30,000.00');
-
-            m = msgFmt.format({
-                NUMBER: 30000
-            });
-
-            expect(m, 'as `undefined`').to.equal('$30,000.00');
-        });
-
-        it('should format numbers into a percent', function () {
-            // {NUMBER, number, percent}
-            var msgFmt = new IntlMessageFormat("{NUMBER, number, percent}", 'en-US'),
-                m = msgFmt.format({ NUMBER: 30 });
-
-            expect(m).to.equal('3,000%');
-        });
-
-        // Tue, 21 Jan 2014 22:22:04 GMT
-        // timestamp 1390342924000
-        it('should format date into short', function () {
-            // {DATE, date, short}
-            var msgFmt = new IntlMessageFormat("{DATE, date, short}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('1/17/2014');
-        });
-
-        it('should format date into medium', function () {
-            // {DATE, date, medium}
-            var msgFmt = new IntlMessageFormat("{DATE, date, medium}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('Jan 17, 2014');
-        });
-
-        it('should format date into long', function () {
-            // {DATE, date, long}
-            var msgFmt = new IntlMessageFormat("{DATE, date, long}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('Jan 17, 2014');
-        });
-
-        it('should format date into a full', function () {
-            // {DATE, date, full}
-            var msgFmt = new IntlMessageFormat("{DATE, date, full}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('Fri, Jan 17, 2014');
-        });
-
-        it('should format time into short', function () {
-            // {DATE, time, short}
-            var msgFmt = new IntlMessageFormat("{DATE, time, short}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('5:44 PM');
-        });
-
-        it('should format time into medium', function () {
-            // {DATE, time, medium}
-            var msgFmt = new IntlMessageFormat("{DATE, time, medium}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('5:44:57 PM');
-        });
-
-        it('should format time into long', function () {
-            // {DATE, time, long}
-            var msgFmt = new IntlMessageFormat("{DATE, time, long}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('5:44:57 PM');
-        });
-
-        it('should format time into a full', function () {
-            // {DATE, time, full}
-            var msgFmt = new IntlMessageFormat("{DATE, time, full}", 'en-US'),
-                m = msgFmt.format({
-                    DATE: new Date('Tue, 21 Jan 2014 22:22:04 GMT'),
-                    timeZone: 'UTC'
-                });
-
-            expect(m).to.equal('5:44:57 PM');
-        });
-
-    });
-    */
-
 });
-
-
