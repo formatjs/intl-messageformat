@@ -3,7 +3,7 @@
 echo branch $TRAVIS_BRANCH
 echo pull request $TRAVIS_PULL_REQUEST
 
-if [[ "false" != "$TRAVIS_PULL_REQUEST" ]]; then;
+if [[ "false" != "$TRAVIS_PULL_REQUEST" ]]; then
     echo "saucelabs testing does not work with pull requests"
     exit 0
 fi
