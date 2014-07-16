@@ -1031,6 +1031,6 @@
     } else if (typeof module !== 'undefined' && module.exports) {
       module.exports = $$full$$default;
     } else if (typeof this !== 'undefined') {
-      this['IntlMessageFormat'] = $$full$$default;
+      this.IntlMessageFormat = $$full$$default;
     }
 }).call(this);
