@@ -11,7 +11,6 @@ module.exports = function (grunt) {
             "dest": 'src/full.js'
         },
         "compile-modules": {
-            "cwd": './',
             "src": 'src/umd.js',
             "dest": 'build/intl-messageformat.js'
         },

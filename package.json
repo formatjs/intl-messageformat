@@ -44,8 +44,9 @@
     "yeti": "~0.2.25",
     "benchmark": "~1.0.0",
     "cldr": "~2.0.1",
+    "recast": "^0.5.27",
     "es6-module-transpiler": "^0.5.1",
-    "recast": "^0.5.27"
+    "es6-module-transpiler-npm-resolver": "~0.0.1"
   },
   "scripts": {
     "build-data": "grunt build-data",

@@ -4,6 +4,8 @@ Copyrights licensed under the New BSD License.
 See the accompanying LICENSE file for terms.
 */
 
+/* jslint esnext: true */
+
 import IntlMessageFormat from './full';
 
 /* global define:true module:true window: true */
