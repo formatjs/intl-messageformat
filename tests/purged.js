@@ -36,26 +36,22 @@ describe('no locale', function () {
         });
 
         it('no locale', function () {
-            function createWithNoLocaleData() {
-                var msg = new IntlMessageFormat(['I have ', {
-                    type: 'plural',
-                    valueName: 'NUM_BOOKS',
-                    options: {
-                        one: '1 book',
-                        other: '${#} books'
-                    }
-                }, '.']);
+            var msg = new IntlMessageFormat(['I have ', {
+                type: 'plural',
+                valueName: 'NUM_BOOKS',
+                options: {
+                    one: '1 book',
+                    other: '${#} books'
+                }
+            }, '.']);
 
-                return msg.format({ NUM_BOOKS: 2 });
-            }
-
-            expect(createWithNoLocaleData).to.throw(Error);
+            expect(msg.format({ NUM_BOOKS: 2 })).to.equal('I have 2 books.');
         });
     });
 
-    describe('no default', function () {
+    describe('invalid locale default', function () {
 
-        it('update locale', function () {
+        it('should fallback to default locale', function () {
             // let's set the locale to something witout data
             IntlMessageFormat.__addLocaleData({
                 locale: 'fu-baz',
@@ -77,8 +73,7 @@ describe('no locale', function () {
 
             var m = msg.format({ COMPANY_COUNT: 1});
 
-            expect(m).to.equal('1 companies published new books.');
+            expect(m).to.equal('One company published new books.');
         });
     });
 });
-

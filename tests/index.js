@@ -25,12 +25,6 @@ if ('function' === typeof require) {
 
     IntlMessageFormat = require('../index.js');
 
-    require('../locale-data/en.js');
-    require('../locale-data/fr.js');
-    require('../locale-data/ru.js');
-    require('../locale-data/ar.js');
-    require('../locale-data/pl.js');
-
 }
 
 expect = chai.expect;
