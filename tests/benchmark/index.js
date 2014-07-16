@@ -4,9 +4,7 @@
 global.Intl || (global.Intl = require('intl'));
 
 var Benchmark         = require('benchmark'),
-    IntlMessageFormat = require('../../index.js');
-
-require('../../locale-data/en');
+    IntlMessageFormat = require('../../');
 
 var suiteConfig = {
     onStart: function (e) {
