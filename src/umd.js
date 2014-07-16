@@ -1,3 +1,9 @@
+/*
+Copyright (c) 2014, Yahoo! Inc. All rights reserved.
+Copyrights licensed under the New BSD License.
+See the accompanying LICENSE file for terms.
+*/
+
 import IntlMessageFormatCore from './core';
 import IntlMessageFormatData from './locale-data';
 
