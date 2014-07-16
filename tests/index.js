@@ -23,7 +23,7 @@ if ('function' === typeof require) {
         global.Intl = require('intl');
     }
 
-    IntlMessageFormat = require('../index.js');
+    IntlMessageFormat = require('../');
 
 }
 

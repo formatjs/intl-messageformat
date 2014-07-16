@@ -1,6 +1,6 @@
 {
   "name": "intl-messageformat",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "implementation of the ECMA 402 proposal for MessageFormat",
   "keywords": [
     "intl",
@@ -24,7 +24,8 @@
     "type": "git",
     "url": "git@github.com:yahoo/intl-messageformat.git"
   },
-  "main": "build/intl-messageformat.complete.min.js",
+  "main": "build/intl-messageformat.js",
+  "files": ["build/", "src/"],
   "directories": {
     "test": "tests"
   },
@@ -37,7 +38,6 @@
     "intl": "~0.1.0",
     "istanbul": "~0.1.46",
     "mocha": "~1.15.1",
-    "mockery": "~1.4.0",
     "xunit-file": "*",
     "yeti": "~0.2.25",
     "benchmark": "~1.0.0",

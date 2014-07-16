@@ -11,29 +11,11 @@
 
 var chai = require('chai'),
     expect = chai.expect,
-
-    mockery = require('mockery'),
-
-    IntlMessageFormat;
-
-mockery.enable({
-    useCleanCache:      true,
-    warnOnReplace:      false,
-    warnOnUnregistered: false
-});
-
-
-IntlMessageFormat = require('../index.js');
-
+    IntlMessageFormat = require('../');
 
 describe('no locale', function () {
 
     describe('no locale provided', function () {
-
-        before(function () {
-            mockery.resetCache();
-            IntlMessageFormat = require('../index.js');
-        });
 
         it('no locale', function () {
             var msg = new IntlMessageFormat(['I have ', {
