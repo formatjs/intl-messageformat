@@ -8,7 +8,7 @@ module.exports = function (grunt) {
             "all": ['index.js', 'src/core.js', 'tests/*.js']
         },
         "build-data": {
-            "dest": 'src/locale-data.js'
+            "dest": 'src/full.js'
         },
         "compile-modules": {
             "cwd": './',

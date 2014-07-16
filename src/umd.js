@@ -4,14 +4,13 @@ Copyrights licensed under the New BSD License.
 See the accompanying LICENSE file for terms.
 */
 
-import IntlMessageFormatCore from './core';
-import IntlMessageFormatData from './locale-data';
+import IntlMessageFormat from './full';
 
 /* global define:true module:true window: true */
 if (typeof define === 'function' && define.amd) {
-  define(function() { return IntlMessageFormatCore; });
+  define(function() { return IntlMessageFormat; });
 } else if (typeof module !== 'undefined' && module.exports) {
-  module.exports = IntlMessageFormatCore;
+  module.exports = IntlMessageFormat;
 } else if (typeof this !== 'undefined') {
-  this['IntlMessageFormat'] = IntlMessageFormatCore;
+  this['IntlMessageFormat'] = IntlMessageFormat;
 }
