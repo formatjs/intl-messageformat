@@ -3,27 +3,29 @@ module.exports = function (grunt) {
     var libpath = require('path');
 
     grunt.initConfig({
-        "pkg": grunt.file.readJSON('package.json'),
-        "jshint": {
-            "all": ['index.js', 'src/core.js', 'tests/*.js']
+        pkg: grunt.file.readJSON('package.json'),
+        jshint: {
+            all: ['index.js', 'src/core.js', 'tests/*.js']
         },
-        "build-data": {
-            "dest": 'src/full.js'
+        build_locale_data: {
+            dest: 'src/full.js'
         },
-        "compile-modules": {
-            "src": 'src/umd.js',
-            "dest": 'build/intl-messageformat.js'
-        },
-        "uglify": {
-            "options": {
-                "preserveComments": 'some'
+        bundle_jsnext: {
+            options: {
+                namespace: 'IntlMessageFormat'
             },
-            "all": {
-                "expand": true,
-                "flatten": true,
-                "src": ['build/*.js', '!build/*.min.js'],
-                "dest": 'build',
-                "rename": function(dest, src) {
+            dest: 'build/intl-messageformat.js'
+        },
+        uglify: {
+            options: {
+                preserveComments: 'some'
+            },
+            all: {
+                expand: true,
+                flatten: true,
+                src: ['build/*.js', '!build/*.min.js'],
+                dest: 'build',
+                rename: function(dest, src) {
                     var ext = libpath.extname(src),
                         base = libpath.basename(src, ext);
                     return libpath.resolve(dest, base + '.min' + ext);
@@ -36,8 +38,9 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-bundle-jsnext-lib');
 
-    grunt.registerTask('cldr', ['build-data']);
-    grunt.registerTask('build', ['compile-modules', 'uglify:all']);
+    grunt.registerTask('cldr', ['build_locale_data']);
+    grunt.registerTask('build', ['bundle_jsnext', 'uglify:all']);
     grunt.registerTask('default', ['jshint']);
 };

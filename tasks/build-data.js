@@ -80,8 +80,8 @@ module.exports = function(grunt) {
     }
 
 
-    grunt.registerTask('build-data', 'rebuilds the locale data', function () {
-        var config = grunt.config.data['build-data'] || {},
+    grunt.registerTask('build_locale_data', 'rebuilds the locale data', function () {
+        var config = grunt.config.data['build_locale_data'] || {},
             roots,
             funcs = {}; // key locale, value function string
 
