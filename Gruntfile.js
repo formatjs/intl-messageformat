@@ -14,7 +14,7 @@ module.exports = function (grunt) {
             options: {
                 namespace: 'IntlMessageFormat'
             },
-            dest: 'build/intl-messageformat.js'
+            dest: 'dist/intl-messageformat.js'
         },
         uglify: {
             options: {
@@ -23,8 +23,8 @@ module.exports = function (grunt) {
             all: {
                 expand: true,
                 flatten: true,
-                src: ['build/*.js', '!build/*.min.js'],
-                dest: 'build',
+                src: ['dist/*.js', '!dist/*.min.js'],
+                dest: 'dist/',
                 rename: function(dest, src) {
                     var ext = libpath.extname(src),
                         base = libpath.basename(src, ext);

@@ -1,6 +1,6 @@
 {
   "name": "intl-messageformat",
-  "main": ["build/intl-messageformat.js"],
+  "main": ["dist/intl-messageformat.js"],
   "version": "0.2.0",
   "homepage": "https://github.com/yahoo/intl-messageformat",
   "authors": [
@@ -15,6 +15,6 @@
   "license": "Yahoo BSD",
   "ignore": [
     "**/.*",
-    "!build/*.js"
+    "!dist/*.js"
   ]
 }
