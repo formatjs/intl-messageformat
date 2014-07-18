@@ -31,6 +31,11 @@ module.exports = function (grunt) {
                     return libpath.resolve(dest, base + '.min' + ext);
                 }
             }
+        },
+        benchmark: {
+            all: {
+                src: ['tests/benchmark/*.js']
+            }
         }
     });
 
@@ -39,6 +44,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-bundle-jsnext-lib');
+    grunt.loadNpmTasks('grunt-benchmark');
 
     grunt.registerTask('cldr', ['build_locale_data']);
     grunt.registerTask('build', ['bundle_jsnext', 'uglify:all']);
