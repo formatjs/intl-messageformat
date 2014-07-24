@@ -100,13 +100,13 @@
             peg$startRuleFunction  = peg$parsestart,
 
             peg$c0 = [],
-            peg$c1 = peg$FAILED,
-            peg$c2 = function(elements) {
+            peg$c1 = function(elements) {
                     return {
                         type    : 'messageFormatPattern',
                         elements: elements
                     };
                 },
+            peg$c2 = peg$FAILED,
             peg$c3 = function(text) {
                     var string = '',
                         i, j, outerLen, inner, innerLen;
@@ -399,17 +399,13 @@
           s0 = peg$currPos;
           s1 = [];
           s2 = peg$parsemessageFormatElement();
-          if (s2 !== peg$FAILED) {
-            while (s2 !== peg$FAILED) {
-              s1.push(s2);
-              s2 = peg$parsemessageFormatElement();
-            }
-          } else {
-            s1 = peg$c1;
+          while (s2 !== peg$FAILED) {
+            s1.push(s2);
+            s2 = peg$parsemessageFormatElement();
           }
           if (s1 !== peg$FAILED) {
             peg$reportedPos = s0;
-            s1 = peg$c2(s1);
+            s1 = peg$c1(s1);
           }
           s0 = s1;
 
@@ -443,15 +439,15 @@
                 s2 = s3;
               } else {
                 peg$currPos = s2;
-                s2 = peg$c1;
+                s2 = peg$c2;
               }
             } else {
               peg$currPos = s2;
-              s2 = peg$c1;
+              s2 = peg$c2;
             }
           } else {
             peg$currPos = s2;
-            s2 = peg$c1;
+            s2 = peg$c2;
           }
           if (s2 !== peg$FAILED) {
             while (s2 !== peg$FAILED) {
@@ -467,19 +463,19 @@
                     s2 = s3;
                   } else {
                     peg$currPos = s2;
-                    s2 = peg$c1;
+                    s2 = peg$c2;
                   }
                 } else {
                   peg$currPos = s2;
-                  s2 = peg$c1;
+                  s2 = peg$c2;
                 }
               } else {
                 peg$currPos = s2;
-                s2 = peg$c1;
+                s2 = peg$c2;
               }
             }
           } else {
-            s1 = peg$c1;
+            s1 = peg$c2;
           }
           if (s1 !== peg$FAILED) {
             peg$reportedPos = s0;
@@ -538,7 +534,7 @@
                 }
               }
             } else {
-              s1 = peg$c1;
+              s1 = peg$c2;
             }
             if (s1 !== peg$FAILED) {
               s1 = input.substring(s0, peg$currPos);
@@ -584,15 +580,15 @@
                         s5 = s6;
                       } else {
                         peg$currPos = s5;
-                        s5 = peg$c1;
+                        s5 = peg$c2;
                       }
                     } else {
                       peg$currPos = s5;
-                      s5 = peg$c1;
+                      s5 = peg$c2;
                     }
                   } else {
                     peg$currPos = s5;
-                    s5 = peg$c1;
+                    s5 = peg$c2;
                   }
                   if (s5 === peg$FAILED) {
                     s5 = peg$c9;
@@ -613,31 +609,31 @@
                         s0 = s1;
                       } else {
                         peg$currPos = s0;
-                        s0 = peg$c1;
+                        s0 = peg$c2;
                       }
                     } else {
                       peg$currPos = s0;
-                      s0 = peg$c1;
+                      s0 = peg$c2;
                     }
                   } else {
                     peg$currPos = s0;
-                    s0 = peg$c1;
+                    s0 = peg$c2;
                   }
                 } else {
                   peg$currPos = s0;
-                  s0 = peg$c1;
+                  s0 = peg$c2;
                 }
               } else {
                 peg$currPos = s0;
-                s0 = peg$c1;
+                s0 = peg$c2;
               }
             } else {
               peg$currPos = s0;
-              s0 = peg$c1;
+              s0 = peg$c2;
             }
           } else {
             peg$currPos = s0;
-            s0 = peg$c1;
+            s0 = peg$c2;
           }
 
           return s0;
@@ -706,15 +702,15 @@
                     s3 = s4;
                   } else {
                     peg$currPos = s3;
-                    s3 = peg$c1;
+                    s3 = peg$c2;
                   }
                 } else {
                   peg$currPos = s3;
-                  s3 = peg$c1;
+                  s3 = peg$c2;
                 }
               } else {
                 peg$currPos = s3;
-                s3 = peg$c1;
+                s3 = peg$c2;
               }
               if (s3 === peg$FAILED) {
                 s3 = peg$c9;
@@ -725,15 +721,15 @@
                 s0 = s1;
               } else {
                 peg$currPos = s0;
-                s0 = peg$c1;
+                s0 = peg$c2;
               }
             } else {
               peg$currPos = s0;
-              s0 = peg$c1;
+              s0 = peg$c2;
             }
           } else {
             peg$currPos = s0;
-            s0 = peg$c1;
+            s0 = peg$c2;
           }
 
           return s0;
@@ -778,7 +774,7 @@
                           s8 = peg$parseoptionalFormatPattern();
                         }
                       } else {
-                        s7 = peg$c1;
+                        s7 = peg$c2;
                       }
                       if (s7 !== peg$FAILED) {
                         peg$reportedPos = s0;
@@ -786,31 +782,31 @@
                         s0 = s1;
                       } else {
                         peg$currPos = s0;
-                        s0 = peg$c1;
+                        s0 = peg$c2;
                       }
                     } else {
                       peg$currPos = s0;
-                      s0 = peg$c1;
+                      s0 = peg$c2;
                     }
                   } else {
                     peg$currPos = s0;
-                    s0 = peg$c1;
+                    s0 = peg$c2;
                   }
                 } else {
                   peg$currPos = s0;
-                  s0 = peg$c1;
+                  s0 = peg$c2;
                 }
               } else {
                 peg$currPos = s0;
-                s0 = peg$c1;
+                s0 = peg$c2;
               }
             } else {
               peg$currPos = s0;
-              s0 = peg$c1;
+              s0 = peg$c2;
             }
           } else {
             peg$currPos = s0;
-            s0 = peg$c1;
+            s0 = peg$c2;
           }
 
           return s0;
@@ -848,7 +844,7 @@
                       s6 = peg$parseoptionalFormatPattern();
                     }
                   } else {
-                    s5 = peg$c1;
+                    s5 = peg$c2;
                   }
                   if (s5 !== peg$FAILED) {
                     peg$reportedPos = s0;
@@ -856,23 +852,23 @@
                     s0 = s1;
                   } else {
                     peg$currPos = s0;
-                    s0 = peg$c1;
+                    s0 = peg$c2;
                   }
                 } else {
                   peg$currPos = s0;
-                  s0 = peg$c1;
+                  s0 = peg$c2;
                 }
               } else {
                 peg$currPos = s0;
-                s0 = peg$c1;
+                s0 = peg$c2;
               }
             } else {
               peg$currPos = s0;
-              s0 = peg$c1;
+              s0 = peg$c2;
             }
           } else {
             peg$currPos = s0;
-            s0 = peg$c1;
+            s0 = peg$c2;
           }
 
           return s0;
@@ -897,11 +893,11 @@
               s1 = s2;
             } else {
               peg$currPos = s1;
-              s1 = peg$c1;
+              s1 = peg$c2;
             }
           } else {
             peg$currPos = s1;
-            s1 = peg$c1;
+            s1 = peg$c2;
           }
           if (s1 !== peg$FAILED) {
             s1 = input.substring(s0, peg$currPos);
@@ -951,35 +947,35 @@
                           s0 = s1;
                         } else {
                           peg$currPos = s0;
-                          s0 = peg$c1;
+                          s0 = peg$c2;
                         }
                       } else {
                         peg$currPos = s0;
-                        s0 = peg$c1;
+                        s0 = peg$c2;
                       }
                     } else {
                       peg$currPos = s0;
-                      s0 = peg$c1;
+                      s0 = peg$c2;
                     }
                   } else {
                     peg$currPos = s0;
-                    s0 = peg$c1;
+                    s0 = peg$c2;
                   }
                 } else {
                   peg$currPos = s0;
-                  s0 = peg$c1;
+                  s0 = peg$c2;
                 }
               } else {
                 peg$currPos = s0;
-                s0 = peg$c1;
+                s0 = peg$c2;
               }
             } else {
               peg$currPos = s0;
-              s0 = peg$c1;
+              s0 = peg$c2;
             }
           } else {
             peg$currPos = s0;
-            s0 = peg$c1;
+            s0 = peg$c2;
           }
 
           return s0;
@@ -1006,15 +1002,15 @@
                 s0 = s1;
               } else {
                 peg$currPos = s0;
-                s0 = peg$c1;
+                s0 = peg$c2;
               }
             } else {
               peg$currPos = s0;
-              s0 = peg$c1;
+              s0 = peg$c2;
             }
           } else {
             peg$currPos = s0;
-            s0 = peg$c1;
+            s0 = peg$c2;
           }
 
           return s0;
@@ -1044,7 +1040,7 @@
               }
             }
           } else {
-            s0 = peg$c1;
+            s0 = peg$c2;
           }
           peg$silentFails--;
           if (s0 === peg$FAILED) {
@@ -1140,11 +1136,11 @@
                 s2 = s3;
               } else {
                 peg$currPos = s2;
-                s2 = peg$c1;
+                s2 = peg$c2;
               }
             } else {
               peg$currPos = s2;
-              s2 = peg$c1;
+              s2 = peg$c2;
             }
             if (s2 !== peg$FAILED) {
               s2 = input.substring(s1, peg$currPos);
@@ -1236,19 +1232,19 @@
                             s3 = s4;
                           } else {
                             peg$currPos = s3;
-                            s3 = peg$c1;
+                            s3 = peg$c2;
                           }
                         } else {
                           peg$currPos = s3;
-                          s3 = peg$c1;
+                          s3 = peg$c2;
                         }
                       } else {
                         peg$currPos = s3;
-                        s3 = peg$c1;
+                        s3 = peg$c2;
                       }
                     } else {
                       peg$currPos = s3;
-                      s3 = peg$c1;
+                      s3 = peg$c2;
                     }
                     if (s3 !== peg$FAILED) {
                       s3 = input.substring(s2, peg$currPos);
@@ -1260,11 +1256,11 @@
                       s0 = s1;
                     } else {
                       peg$currPos = s0;
-                      s0 = peg$c1;
+                      s0 = peg$c2;
                     }
                   } else {
                     peg$currPos = s0;
-                    s0 = peg$c1;
+                    s0 = peg$c2;
                   }
                 }
               }
@@ -1286,7 +1282,7 @@
               s2 = peg$parsechar();
             }
           } else {
-            s1 = peg$c1;
+            s1 = peg$c2;
           }
           if (s1 !== peg$FAILED) {
             peg$reportedPos = s0;
