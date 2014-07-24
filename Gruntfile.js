@@ -33,8 +33,11 @@ module.exports = function (grunt) {
             }
         },
         benchmark: {
-            all: {
-                src: ['tests/benchmark/*.js']
+            construct: {
+                src: ['tests/benchmark/new*.js']
+            },
+            format: {
+                src: ['tests/benchmark/format*.js']
             }
         }
     });
