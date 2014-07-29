@@ -162,8 +162,9 @@ MessageFormat.prototype.resolvedOptions = function () {
 };
 
 MessageFormat.prototype._compilePattern = function (ast, locales, formats, pluralFn) {
-    var pluralStack   = [],
-        currentPlural = null;
+    var pluralStack        = [],
+        currentPlural      = null,
+        pluralNumberFormat = null;
 
     function compile(ast) {
         var elements = ast.elements,
@@ -192,14 +193,24 @@ MessageFormat.prototype._compilePattern = function (ast, locales, formats, plura
     }
 
     function compileMessageText(element) {
-        if (currentPlural) {
+        // When this `element` is part of plural sub-pattern and its value
+        // contains an unescaped '#', use a `PluralOffsetString` helper to
+        // properly output the number with the correct offset in the string.
+        if (currentPlural && /(^|[^\\])#/g.test(element.value)) {
+            // Create a cache a NumberFormat instance that can be reused for any
+            // PluralOffsetString instance in this message.
+            if (!pluralNumberFormat) {
+                pluralNumberFormat = new Intl.NumberFormat(locales);
+            }
+
             return new PluralOffsetString(
                     currentPlural.id,
                     currentPlural.format.offset,
-                    new Intl.NumberFormat(locales),
+                    pluralNumberFormat,
                     element.value);
         }
 
+        // Unescape the escaped '#'s in the message text.
         return element.value.replace(/\\#/g, '#');
     }
 
@@ -234,7 +245,7 @@ MessageFormat.prototype._compilePattern = function (ast, locales, formats, plura
                 };
 
             case 'pluralFormat':
-                options       = compileOptions(element);
+                options = compileOptions(element);
                 return new PluralFormat(element.id, format.offset, options, pluralFn);
 
             case 'selectFormat':
@@ -251,16 +262,22 @@ MessageFormat.prototype._compilePattern = function (ast, locales, formats, plura
             options     = format.options,
             optionsHash = {};
 
+        // Save the current plural element, if any, then set it to a new value
+        // when compiling the options sub-patterns. This conform's the spec's
+        // algorithm for handling `"#"` synax in message text.
         pluralStack.push(currentPlural);
         currentPlural = format.type === 'pluralFormat' ? element : null;
 
         var i, len, option;
 
         for (i = 0, len = options.length; i < len; i += 1) {
-            option  = options[i];
+            option = options[i];
+
+            // Compile the sub-pattern and save it under the options's selector.
             optionsHash[option.selector] = compile(option.value);
         }
 
+        // Pop the plural stack to put back the original currnet plural value.
         currentPlural = pluralStack.pop();
 
         return optionsHash;
