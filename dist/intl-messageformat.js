@@ -1421,9 +1421,7 @@
 
     // Define internal private properties for dealing with locale data.
     $$es5$$defineProperty($$core$$MessageFormat, '__availableLocales__', {value: []});
-
     $$es5$$defineProperty($$core$$MessageFormat, '__localeData__', {value: $$es5$$objCreate(null)});
-
     $$es5$$defineProperty($$core$$MessageFormat, '__addLocaleData', {value: function (data) {
         if (!(data && data.locale)) {
             throw new Error('Object passed does not identify itself with a valid language tag');
@@ -1727,7 +1725,6 @@
         var options = this.options;
         return options[value] || options.other;
     };
-
     var src$full$$funcs = [
     function (n) {  },
     function (n) { n=Math.floor(n);if(n===1)return"one";return"other"; },
@@ -1766,7 +1763,6 @@
     function (n) { n=Math.floor(n);if(n>=0&&n<=1||n>=11&&n<=99)return"one";return"other"; },
     function (n) { var i=Math.floor(Math.abs(n)),v=n.toString().replace(/^[^.]*\.?/,"").length;n=Math.floor(n);if(v===0&&i%10===1&&(i%100!==11))return"one";if(v===0&&i%10>=2&&i%10<=4&&!(i%100>=12&&i%100<=14))return"few";if(v===0&&(i%10===0||v===0&&(i%10>=5&&i%10<=9||v===0&&i%100>=11&&i%100<=14)))return"many";return"other"; }
     ];
-
     $$core$$default.__addLocaleData({locale:"aa", messageformat:{pluralFunction:src$full$$funcs[0]}});
     $$core$$default.__addLocaleData({locale:"af", messageformat:{pluralFunction:src$full$$funcs[1]}});
     $$core$$default.__addLocaleData({locale:"agq", messageformat:{pluralFunction:src$full$$funcs[0]}});
@@ -1963,7 +1959,6 @@
     $$core$$default.__addLocaleData({locale:"zh", messageformat:{pluralFunction:src$full$$funcs[6]}});
     $$core$$default.__addLocaleData({locale:"zu", messageformat:{pluralFunction:src$full$$funcs[3]}});
     var src$full$$default = $$core$$default;
-
     if (typeof define === 'function' && define.amd) {
       define(function() { return src$full$$default; });
     } else if (typeof module !== 'undefined' && module.exports) {
@@ -1972,3 +1967,5 @@
       this['IntlMessageFormat'] = src$full$$default;
     }
 }).call(this);
+
+//# sourceMappingURL=intl-messageformat.js.map
