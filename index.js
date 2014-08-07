@@ -1,4 +1,4 @@
-var m = require('./lib/src/full.js');
+var m = require('./lib/full.js');
 
 // providing an idiomatic api for the nodejs version of this module
 module.exports = exports = m.default;

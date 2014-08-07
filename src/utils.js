@@ -1,3 +1,11 @@
+/*
+Copyright (c) 2014, Yahoo! Inc. All rights reserved.
+Copyrights licensed under the New BSD License.
+See the accompanying LICENSE file for terms.
+*/
+
+/* jslint esnext: true */
+
 export var hop = Object.prototype.hasOwnProperty;
 
 export function extend(obj) {
