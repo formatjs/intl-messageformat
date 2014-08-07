@@ -26,12 +26,15 @@
     "type": "git",
     "url": "git@github.com:yahoo/intl-messageformat.git"
   },
-  "main": "dist/intl-messageformat.js",
+  "main": "./build/src/full.js",
   "dist": "dist/intl-messageformat.js",
-  "jsnext:main": "src/full.js",
+  "jsnext:main": "./src/full.js",
   "files": [
+    "index.js",
+    "lib/",
     "dist/",
-    "src/"
+    "src/",
+    "LICENSE"
   ],
   "directories": {
     "test": "tests"

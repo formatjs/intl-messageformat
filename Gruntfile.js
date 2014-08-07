@@ -16,11 +16,14 @@ module.exports = function (grunt) {
             },
             dest: 'dist/intl-messageformat.js'
         },
+        cjs_jsnext: {
+            dest: 'lib/'
+        },
         uglify: {
             options: {
                 preserveComments: 'some'
             },
-            all: {
+            dist: {
                 expand: true,
                 flatten: true,
                 src: ['dist/*.js', '!dist/*.min.js'],
@@ -50,6 +53,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-benchmark');
 
     grunt.registerTask('cldr', ['build_locale_data']);
-    grunt.registerTask('build', ['bundle_jsnext', 'uglify:all']);
+    grunt.registerTask('build', ['bundle_jsnext', 'cjs_jsnext', 'uglify:dist']);
     grunt.registerTask('default', ['jshint']);
 };
