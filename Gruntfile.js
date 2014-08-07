@@ -24,15 +24,8 @@ module.exports = function (grunt) {
                 preserveComments: 'some'
             },
             dist: {
-                expand: true,
-                flatten: true,
-                src: ['dist/*.js', '!dist/*.min.js'],
-                dest: 'dist/',
-                rename: function(dest, src) {
-                    var ext = libpath.extname(src),
-                        base = libpath.basename(src, ext);
-                    return libpath.resolve(dest, base + '.min' + ext);
-                }
+                src: ['dist/intl-messageformat.js'],
+                dest: 'dist/intl-messageformat.min.js'
             }
         },
         benchmark: {
