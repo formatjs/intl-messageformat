@@ -88,7 +88,7 @@ Usage
 
 ### `Intl` Dependency
 
-This package assumes that the [`Intl`][INTL] global object exists in the runtime. `Intl` is present in all modern browsers _expect_ Safari, and there's work happening to [integrate `Intl` into Node.js][NODE-INTL].
+This package assumes that the [`Intl`][INTL] global object exists in the runtime. `Intl` is present in all modern browsers _except_ Safari, and there's work happening to [integrate `Intl` into Node.js][NODE-INTL].
 
 **Luckly, there's the [Intl.js][] polyfill!** You will need to conditionally load the polyfill if you want to support runtimes which `Intl` is not already built-in.
 
