@@ -20,7 +20,7 @@ This implementation is based on the [Strawman Draft][STRAWMAN]. There are a few 
 
 ### How It Works
 
-Messages are provided into the constructor as `String` message, or [pre-prased AST][PARSER].
+Messages are provided into the constructor as `String` message, or [pre-parsed AST][PARSER].
 
 ```javascript
 var msg = new IntlMessageFormat(message, locales, [formats]);
@@ -97,7 +97,7 @@ This package assumes that the [`Intl`][INTL] global object exists in the runtime
 #### `IntlMessageFormat` Constructor
 To create a message to format, use the IntlMessageFormat constructor. The constructor has three parameters:
 
- - **message** - _{String | AST}_ - String message (or pre-prased AST) that serves as formatting pattern.
+ - **message** - _{String | AST}_ - String message (or pre-parsed AST) that serves as formatting pattern.
 
  - **locales** - _{String | String[]}_ - A string with a BCP 47 language tag, or an array of such strings. If you do not provide a locale, the default locale will be used, but you should _always_ provide one!
 
