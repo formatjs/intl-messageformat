@@ -242,7 +242,7 @@ MessageFormat.prototype._resolveLocale = function (locales) {
         }
 
         // Return the first locale for which we have CLDR data registered.
-        if (locale in localeData) {
+        if (hop.call(localeData, locale)) {
             return locale;
         }
     }
