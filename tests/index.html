@@ -15,36 +15,7 @@
     <script>mocha.setup('bdd')</script>
     <script src="index.js"></script>
     <script>
-    (function () {
-      var runner = mocha.run();
-
-      var failedTests = [];
-      runner.on('end', function () {
-        window.mochaResults = runner.stats;
-        window.mochaResults.reports = failedTests;
-      });
-
-      function flattenTitles(test) {
-        var titles = [];
-        while (test.parent.title){
-          titles.push(test.parent.title);
-          test = test.parent;
-        }
-        return titles.reverse();
-      }
-
-      runner.on('fail', function (test, err) {
-
-        failedTests.push({
-          name: test.title,
-          result: false,
-          message: err && err.message,
-          stack: err && err.stack,
-          titles: flattenTitles(test)
-        });
-
-      });
-    }());
+    mocha.run();
     </script>
   </body>
 </html>
