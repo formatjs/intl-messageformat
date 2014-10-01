@@ -7,6 +7,8 @@ Format a string with placeholders, including plural and select support to create
 [![Build Status](http://img.shields.io/travis/yahoo/intl-messageformat.svg?style=flat)][TRAVIS]
 [![Dependency Status](https://img.shields.io/david/yahoo/intl-messageformat.svg?style=flat)][DAVID]
 
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/intl-messageformat.svg)](https://saucelabs.com/u/intl-messageformat)
+
 Overview
 --------
 
