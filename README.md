@@ -17,7 +17,7 @@ This package aims to provide a way for you to manage and format your JavaScript 
 
 This implementation is based on the [Strawman proposal][strawman], but there are a few places this implementation diverges.
 
-_Note: This `IntlMessageFormat` API may change to stay in sync with ECMA-402, but this package will follow semver._
+_Note: This `IntlMessageFormat` API may change to stay in sync with ECMA-402, but this package will follow [semver][]._
 
 ### How It Works
 
@@ -27,7 +27,7 @@ Messages are provided into the constructor as a `String` message, or a [pre-pars
 var msg = new IntlMessageFormat(message, locales, [formats]);
 ```
 
-The string `message` is parsed, then stored internally in a compiled form that is optimized for the `format()` method to produce the formatted string which can then be displayed to the user.
+The string `message` is parsed, then stored internally in a compiled form that is optimized for the `format()` method to produce the formatted string for display to the user.
 
 ```js
 var output = msg.format(values);
@@ -146,7 +146,7 @@ Simply `require()` this package:
 var IntlMessageFormat = require('intl-messageformat');
 ```
 
-_Note: in Node.js, the data for all 150+ locales is pre-loaded._
+_Note: in Node.js, the data for all 150+ locales is loaded along with the library._
 
 ### Public API
 
@@ -249,4 +249,5 @@ See the [LICENSE file][LICENSE] for license text and copyright information.
 [Intl-Node]: https://github.com/joyent/node/issues/6371
 [Intl.js]: https://github.com/andyearnshaw/Intl.js
 [rawgit]: https://rawgit.com/
+[semver]: http://semver.org/
 [LICENSE]: https://github.com/yahoo/intl-messageformat/blob/master/LICENSE
