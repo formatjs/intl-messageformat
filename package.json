@@ -33,7 +33,6 @@
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
-    "chai": "^1.9.1",
     "expect.js": "^0.3.1",
     "grunt": "^0.4.5",
     "grunt-benchmark": "^0.3.0",
