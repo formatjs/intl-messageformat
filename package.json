@@ -33,7 +33,7 @@
     "./lib/locales.js": false
   },
   "dependencies": {
-    "intl-messageformat-parser": "1.0.2"
+    "intl-messageformat-parser": "1.1.0"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
@@ -49,7 +49,7 @@
     "grunt-contrib-copy": "^0.8.0",
     "grunt-contrib-jshint": "^0.11.0",
     "grunt-contrib-uglify": "^0.8.0",
-    "grunt-extract-cldr-data": "^1.1.0",
+    "grunt-extract-cldr-data": "^2.1.0",
     "grunt-json-remove-fields": "git://github.com/ericf/grunt-json-remove-fields#improve-files-and-output",
     "grunt-saucelabs": "^8.4.1",
     "intl": "^0.1.4",
@@ -58,7 +58,7 @@
     "xunit-file": "0.0.6"
   },
   "scripts": {
-    "test": "istanbul cover -x lib/locales.js -- ./node_modules/mocha/bin/_mocha tests/runner.js --reporter spec",
+    "test": "istanbul cover -x lib/locales.js -- _mocha tests/runner.js --reporter spec",
     "travis": "istanbul cover -x lib/locales.js -- _mocha tests/runner.js --reporter spec && tests/saucelabs.sh",
     "prepublish": "grunt"
   },
