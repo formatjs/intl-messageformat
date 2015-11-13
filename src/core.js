@@ -11,8 +11,6 @@ import {defineProperty, objCreate} from './es5';
 import Compiler from './compiler';
 import parser from 'intl-messageformat-parser';
 
-export default MessageFormat;
-
 // -- MessageFormat --------------------------------------------------------
 
 function MessageFormat(message, locales, formats) {
@@ -263,3 +261,5 @@ MessageFormat.prototype._resolveLocale = function (locales) {
         locales.join(', ') + ', or the default locale: ' + defaultLocale
     );
 };
+
+export default MessageFormat;
