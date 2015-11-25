@@ -205,7 +205,7 @@
     }
 
     $$compiler$$StringFormat.prototype.format = function (value) {
-        if (!value) {
+        if (!value && (value !== 0)) {
             return '';
         }
 
