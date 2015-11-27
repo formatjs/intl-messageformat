@@ -112,6 +112,24 @@ describe('IntlMessageFormat', function () {
         });
     });
 
+    describe('formatting a number', function () {
+        it('should substitute 0 into the string', function () {
+            var mf = new IntlMessageFormat('Count: {COUNT}');
+            var output = mf.format({
+                COUNT: 0
+            });
+            expect(output).to.equal('Count: 0');
+        });
+
+        it('should substitute 1 into the string', function () {
+            var mf = new IntlMessageFormat('Count: {COUNT}');
+            var output = mf.format({
+                COUNT: 1
+            });
+            expect(output).to.equal('Count: 1');
+        });
+    });
+
     describe('and plurals under the Arabic locale', function () {
         var msg = '' +
             'I have {numPeople, plural,' +
