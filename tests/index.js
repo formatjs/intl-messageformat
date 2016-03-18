@@ -112,6 +112,18 @@ describe('IntlMessageFormat', function () {
         });
     });
 
+    describe('using a string pattern', function () {
+        it('should render integer 0 number', function () {
+            var mf = new IntlMessageFormat('Осталось попыток: {TRIES_LEFT} из {TRIES_OVERALL}');
+            var output = mf.format({
+                TRIES_LEFT: 0,
+                TRIES_OVERALL: 3
+            });
+
+            expect(output).to.equal('Осталось попыток: 0 из 3');
+        });
+    });
+
     describe('and plurals under the Arabic locale', function () {
         var msg = '' +
             'I have {numPeople, plural,' +
