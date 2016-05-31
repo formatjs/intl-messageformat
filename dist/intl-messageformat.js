@@ -169,6 +169,9 @@
 
         case "pluralFormat":
           options = this.compileOptions(element);
+          if (!options['other']) {
+              throw new Error('`other` case was not provided in plural rule');
+          }
           return new $$compiler$$PluralFormat(
             element.id,
             format.ordinal,
@@ -179,6 +182,9 @@
 
         case "selectFormat":
           options = this.compileOptions(element);
+          if (!options['other']) {
+              throw new Error('`other` case was not provided in select rule');
+          }
           return new $$compiler$$SelectFormat(element.id, options);
 
         default:
