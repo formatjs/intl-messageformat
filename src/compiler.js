@@ -120,7 +120,7 @@ Compiler.prototype.compileArgument = function (element) {
         case 'selectFormat':
             options = this.compileOptions(element);
             if (!options['other']) {
-                throw new Error('`other` case was not provided in plural rule');
+                throw new Error('`other` case was not provided in select rule');
             }
             return new SelectFormat(element.id, options);
 
