@@ -378,4 +378,20 @@ describe('IntlMessageFormat', function () {
             expect(ptMZ.format({num: 0})).to.equal('other');
         });
     });
+
+    describe('at compile time', function () {
+        it('should fail if no `other` case was provided for plural, select and selectordinal rules', function () {
+            var messages = [
+                '{NUMBER, plural, =1 {One}}',
+                '{GENDER, plural, male {#}}',
+                '{YEAR, selectordinal, one {#st}}'
+            ];
+            function compileMessage() { return new IntlMessageFormat(msg); }
+            function expectError(e) { expect(e).to.be.an(Error); };
+
+            expect(compileMessage).withArgs(messages[0]).to.throwException(expectError);
+            expect(compileMessage).withArgs(messages[1]).to.throwException(expectError);
+            expect(compileMessage).withArgs(messages[2]).to.throwException(expectError);
+        });
+    })
 });
