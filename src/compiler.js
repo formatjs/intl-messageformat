@@ -156,11 +156,11 @@ function StringFormat(id) {
 }
 
 StringFormat.prototype.format = function (value) {
-    if (!value) {
-        return '';
+    if (value || value === 0) {
+        return typeof value === 'string' ? value : String(value);
     }
 
-    return typeof value === 'string' ? value : String(value);
+    return '';
 };
 
 function PluralFormat(id, useOrdinal, offset, options, pluralFn) {
