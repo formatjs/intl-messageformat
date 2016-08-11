@@ -69,8 +69,8 @@
             $$compiler$$Intl = IntlPolyfill;
         }
         else {
-            // fall back to using the one available in window
-            $$compiler$$Intl = window.Intl;
+            // fall back to using the one available in the global scope
+            $$compiler$$Intl = global.Intl;
         }
     }
 
