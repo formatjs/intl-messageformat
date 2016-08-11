@@ -20,8 +20,8 @@ function Compiler(locales, formats, pluralFn, IntlPolyfill) {
         Intl = IntlPolyfill;
     }
     else {
-        // fall back to using the one available in window
-        Intl = window.Intl;
+        // fall back to using the one available in the global scope
+        Intl = global.Intl;
     }
 }
 
