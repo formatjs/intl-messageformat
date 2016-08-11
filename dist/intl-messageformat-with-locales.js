@@ -57,10 +57,21 @@
     };
     var $$compiler$$default = $$compiler$$Compiler;
 
-    function $$compiler$$Compiler(locales, formats, pluralFn) {
+    var $$compiler$$Intl;
+
+    function $$compiler$$Compiler(locales, formats, pluralFn, IntlPolyfill) {
         this.locales  = locales;
         this.formats  = formats;
         this.pluralFn = pluralFn;
+
+        if (IntlPolyfill) {
+            // use an Intl polyfill when provided
+            $$compiler$$Intl = IntlPolyfill;
+        }
+        else {
+            // fall back to using the one available in window
+            $$compiler$$Intl = window.Intl;
+        }
     }
 
     $$compiler$$Compiler.prototype.compile = function (ast) {
@@ -109,7 +120,7 @@
             // Create a cache a NumberFormat instance that can be reused for any
             // PluralOffsetString instance in this message.
             if (!this.pluralNumberFormat) {
-                this.pluralNumberFormat = new Intl.NumberFormat(this.locales);
+                this.pluralNumberFormat = new $$compiler$$Intl.NumberFormat(this.locales);
             }
 
             return new $$compiler$$PluralOffsetString(
@@ -140,21 +151,21 @@
                 options = formats.number[format.style];
                 return {
                     id    : element.id,
-                    format: new Intl.NumberFormat(locales, options).format
+                    format: new $$compiler$$Intl.NumberFormat(locales, options).format
                 };
 
             case 'dateFormat':
                 options = formats.date[format.style];
                 return {
                     id    : element.id,
-                    format: new Intl.DateTimeFormat(locales, options).format
+                    format: new $$compiler$$Intl.DateTimeFormat(locales, options).format
                 };
 
             case 'timeFormat':
                 options = formats.time[format.style];
                 return {
                     id    : element.id,
-                    format: new Intl.DateTimeFormat(locales, options).format
+                    format: new $$compiler$$Intl.DateTimeFormat(locales, options).format
                 };
 
             case 'pluralFormat':
@@ -1614,7 +1625,7 @@
 
     // -- MessageFormat --------------------------------------------------------
 
-    function $$core$$MessageFormat(message, locales, formats) {
+    function $$core$$MessageFormat(message, locales, formats, IntlPolyfill) {
         // Parse string messages into an AST.
         var ast = typeof message === 'string' ?
                 $$core$$MessageFormat.__parse(message) : message;
@@ -1634,7 +1645,7 @@
         // `format()` invocations. **Note:** This passes the `locales` set provided
         // to the constructor instead of just the resolved locale.
         var pluralFn = this._findPluralRuleFunction(this._locale);
-        var pattern  = this._compilePattern(ast, locales, formats, pluralFn);
+        var pattern  = this._compilePattern(ast, locales, formats, pluralFn, IntlPolyfill);
 
         // "Bind" `format()` method to `this` so it can be passed by reference like
         // the other `Intl` APIs.
@@ -1748,8 +1759,8 @@
         };
     };
 
-    $$core$$MessageFormat.prototype._compilePattern = function (ast, locales, formats, pluralFn) {
-        var compiler = new $$compiler$$default(locales, formats, pluralFn);
+    $$core$$MessageFormat.prototype._compilePattern = function (ast, locales, formats, pluralFn, IntlPolyfill) {
+        var compiler = new $$compiler$$default(locales, formats, pluralFn, IntlPolyfill);
         return compiler.compile(ast);
     };
 
