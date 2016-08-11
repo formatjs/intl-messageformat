@@ -16,9 +16,11 @@ function Compiler(locales, formats, pluralFn, IntlPolyfill) {
     this.pluralFn = pluralFn;
 
     if (IntlPolyfill) {
+        // use an Intl polyfill when provided
         Intl = IntlPolyfill;
     }
     else {
+        // fall back to using the one available in window
         Intl = window.Intl;
     }
 }
