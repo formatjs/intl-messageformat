@@ -8,10 +8,19 @@ See the accompanying LICENSE file for terms.
 
 export default Compiler;
 
-function Compiler(locales, formats, pluralFn) {
+var Intl;
+
+function Compiler(locales, formats, pluralFn, IntlPolyfill) {
     this.locales  = locales;
     this.formats  = formats;
     this.pluralFn = pluralFn;
+
+    if (IntlPolyfill) {
+        Intl = IntlPolyfill;
+    }
+    else {
+        Intl = window.Intl;
+    }
 }
 
 Compiler.prototype.compile = function (ast) {
