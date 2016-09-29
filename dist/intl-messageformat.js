@@ -57,7 +57,7 @@
     };
     var $$compiler$$default = $$compiler$$Compiler;
 
-    var $$compiler$$Intl;
+    var $$compiler$$WhichIntl;
 
     function $$compiler$$Compiler(locales, formats, pluralFn, IntlPolyfill) {
         this.locales  = locales;
@@ -66,11 +66,11 @@
 
         if (IntlPolyfill) {
             // use an Intl polyfill when provided
-            $$compiler$$Intl = IntlPolyfill;
+            $$compiler$$WhichIntl = IntlPolyfill;
         }
         else {
-            // fall back to using the one available in the global scope
-            $$compiler$$Intl = global.Intl;
+            // fall back to using the one available in the a parent scope
+            $$compiler$$WhichIntl = Intl;
         }
     }
 
@@ -120,7 +120,7 @@
             // Create a cache a NumberFormat instance that can be reused for any
             // PluralOffsetString instance in this message.
             if (!this.pluralNumberFormat) {
-                this.pluralNumberFormat = new $$compiler$$Intl.NumberFormat(this.locales);
+                this.pluralNumberFormat = new $$compiler$$WhichIntl.NumberFormat(this.locales);
             }
 
             return new $$compiler$$PluralOffsetString(
@@ -151,21 +151,21 @@
                 options = formats.number[format.style];
                 return {
                     id    : element.id,
-                    format: new $$compiler$$Intl.NumberFormat(locales, options).format
+                    format: new $$compiler$$WhichIntl.NumberFormat(locales, options).format
                 };
 
             case 'dateFormat':
                 options = formats.date[format.style];
                 return {
                     id    : element.id,
-                    format: new $$compiler$$Intl.DateTimeFormat(locales, options).format
+                    format: new $$compiler$$WhichIntl.DateTimeFormat(locales, options).format
                 };
 
             case 'timeFormat':
                 options = formats.time[format.style];
                 return {
                     id    : element.id,
-                    format: new $$compiler$$Intl.DateTimeFormat(locales, options).format
+                    format: new $$compiler$$WhichIntl.DateTimeFormat(locales, options).format
                 };
 
             case 'pluralFormat':
