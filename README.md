@@ -277,10 +277,7 @@ var msg = new IntlMessageFormat(MESSAGES.photos, 'en-US');
 Template file;
 
 ```
-<!DOCTYPE html>
 <html>
-  <head>
-  </head>
   <body>
     <%- new Intl.MessageFormat(i18n.MESSAGES['en-US'].NUM_PHOTOS, 'en-US').format({numPhotos: 1000}) %> <!-- => "You have 1,000 photos." -->
   </body>
