@@ -110,6 +110,15 @@ describe('IntlMessageFormat', function () {
 
             expect(output).to.equal('My name is Anthony Pipkin.');
         });
+
+        it('should not ignore zero values', function() {
+            var mf = new IntlMessageFormat('I am {age} years old.');
+            var output = mf.format({
+                age: 0
+            });
+
+            expect(output).to.equal('I am 0 years old.');
+        });
     });
 
     describe('and plurals under the Arabic locale', function () {
