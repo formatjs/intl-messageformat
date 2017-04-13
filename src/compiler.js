@@ -156,7 +156,7 @@ function StringFormat(id) {
 }
 
 StringFormat.prototype.format = function (value) {
-    if (value == null) {
+    if (typeof value == 'undefined' || value === null) {
         return '';
     }
 
