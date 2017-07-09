@@ -252,6 +252,41 @@ console.log(msg.format({numPhotos: 1000})); // => "You have 1,000 photos."
 _Note: how when `numPhotos` was `1000`, the number is formatted with the correct thousands separator._
 
 
+### Plural Label With Templates
+
+```
+You have {numPhotos, plural,
+    =0 {no photos.}
+    =1 {one photo.}
+    other {# photos.}
+}
+```
+
+```js
+var MESSAGES = {
+    photos: '...', // String from code block above.
+    ...
+};
+
+global.Intl.MessageFormat = require('intl-messageformat');
+global.i18n = { MESSAGES }
+
+var msg = new IntlMessageFormat(MESSAGES.photos, 'en-US');
+```
+
+Template file;
+
+```
+<html>
+  <body>
+    <%- new Intl.MessageFormat(i18n.MESSAGES['en-US'].NUM_PHOTOS, 'en-US').format({numPhotos: 1000}) %> <!-- => "You have 1,000 photos." -->
+  </body>
+</html>
+```
+
+_Note: The number is formatted with the correct thousands separator._
+
+
 License
 -------
 
