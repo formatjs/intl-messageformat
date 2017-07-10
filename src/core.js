@@ -15,7 +15,7 @@ export default MessageFormat;
 
 // -- MessageFormat --------------------------------------------------------
 
-function MessageFormat(message, locales, formats) {
+function MessageFormat(message, locales, formats, IntlPolyfill) {
     // Parse string messages into an AST.
     var ast = typeof message === 'string' ?
             MessageFormat.__parse(message) : message;
@@ -35,7 +35,7 @@ function MessageFormat(message, locales, formats) {
     // `format()` invocations. **Note:** This passes the `locales` set provided
     // to the constructor instead of just the resolved locale.
     var pluralFn = this._findPluralRuleFunction(this._locale);
-    var pattern  = this._compilePattern(ast, locales, formats, pluralFn);
+    var pattern  = this._compilePattern(ast, locales, formats, pluralFn, IntlPolyfill);
 
     // "Bind" `format()` method to `this` so it can be passed by reference like
     // the other `Intl` APIs.
@@ -149,8 +149,8 @@ MessageFormat.prototype.resolvedOptions = function () {
     };
 };
 
-MessageFormat.prototype._compilePattern = function (ast, locales, formats, pluralFn) {
-    var compiler = new Compiler(locales, formats, pluralFn);
+MessageFormat.prototype._compilePattern = function (ast, locales, formats, pluralFn, IntlPolyfill) {
+    var compiler = new Compiler(locales, formats, pluralFn, IntlPolyfill);
     return compiler.compile(ast);
 };
 

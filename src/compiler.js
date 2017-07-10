@@ -8,10 +8,21 @@ See the accompanying LICENSE file for terms.
 
 export default Compiler;
 
-function Compiler(locales, formats, pluralFn) {
+var WhichIntl;
+
+function Compiler(locales, formats, pluralFn, IntlPolyfill) {
     this.locales  = locales;
     this.formats  = formats;
     this.pluralFn = pluralFn;
+
+    if (IntlPolyfill) {
+        // use an Intl polyfill when provided
+        WhichIntl = IntlPolyfill;
+    }
+    else {
+        // fall back to using the one available in the a parent scope
+        WhichIntl = Intl;
+    }
 }
 
 Compiler.prototype.compile = function (ast) {
@@ -60,7 +71,7 @@ Compiler.prototype.compileMessageText = function (element) {
         // Create a cache a NumberFormat instance that can be reused for any
         // PluralOffsetString instance in this message.
         if (!this.pluralNumberFormat) {
-            this.pluralNumberFormat = new Intl.NumberFormat(this.locales);
+            this.pluralNumberFormat = new WhichIntl.NumberFormat(this.locales);
         }
 
         return new PluralOffsetString(
@@ -91,21 +102,21 @@ Compiler.prototype.compileArgument = function (element) {
             options = formats.number[format.style];
             return {
                 id    : element.id,
-                format: new Intl.NumberFormat(locales, options).format
+                format: new WhichIntl.NumberFormat(locales, options).format
             };
 
         case 'dateFormat':
             options = formats.date[format.style];
             return {
                 id    : element.id,
-                format: new Intl.DateTimeFormat(locales, options).format
+                format: new WhichIntl.DateTimeFormat(locales, options).format
             };
 
         case 'timeFormat':
             options = formats.time[format.style];
             return {
                 id    : element.id,
-                format: new Intl.DateTimeFormat(locales, options).format
+                format: new WhichIntl.DateTimeFormat(locales, options).format
             };
 
         case 'pluralFormat':
