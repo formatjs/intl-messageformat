@@ -270,6 +270,18 @@ describe('IntlMessageFormat', function () {
         });
     });
 
+    describe('and handle empty pluralization part', function () {
+      var messages = {
+          en: '{favoritesCount, plural, =0 {} one {# favorite} other {# favorites}}'
+      };
+
+      it('should format a message with en-US locale', function () {
+          var msgFmt = new IntlMessageFormat(messages.en, 'en-US');
+
+          expect(msgFmt.format({favoritesCount: 0})).to.equal('');
+      });
+    });
+
     describe('and change the locale with different counts', function () {
         var messages = {
             en: '{COMPANY_COUNT, plural, ' +
