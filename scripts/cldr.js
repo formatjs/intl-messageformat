@@ -53,7 +53,7 @@ ${Object.keys(allLocaleFiles)
 // Extract src/en.js
 const en = extractLocales(undefined, ["en"]);
 outputFileSync(
-  resolve(__dirname, "../src/en.js"),
+  resolve(__dirname, "../src/en.ts"),
   `/* @generated */
 export default ${en.en};
 `

@@ -463,8 +463,6 @@ describe("IntlMessageFormat", function() {
         }
       }
     });
-    expect(mf.format({ time: 0 })).to.contain(
-      "00:00"
-    );
+    expect(mf.format({ time: 0 })).to.contain("00:00");
   });
 });

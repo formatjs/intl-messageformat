@@ -58,6 +58,8 @@
     "prettier": "^1.17.1",
     "rimraf": "^2.6.3",
     "serialize-javascript": "^1.7.0",
+    "ts-node": "^8.1.0",
+    "typescript": "^3.4.5",
     "xunit-file": "1.0.0"
   },
   "scripts": {
@@ -67,7 +69,7 @@
     "clean": "rimraf dist lib tmp",
     "cover": "nyc -x lib/locales.js npm t",
     "prepublishOnly": "npm run build",
-    "prettier": "prettier --write '{src,tests,scripts}/**/*.js'",
+    "prettier": "prettier --write '{src,tests,scripts}/**/*.ts'",
     "test": "mocha tests/runner.js --reporter spec",
     "travis": "npm run build && npm run cover && tests/saucelabs.sh"
   },
@@ -75,5 +77,8 @@
   "directories": {
     "test": "tests"
   },
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "prettier": {
+    "parser": "typescript"
+  }
 }
