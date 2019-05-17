@@ -69,7 +69,7 @@
     "prepublishOnly": "npm run build",
     "prettier": "prettier --write '{src,tests,scripts}/**/*.js'",
     "test": "mocha tests/runner.js --reporter spec",
-    "travis": "npm run cover && tests/saucelabs.sh"
+    "travis": "npm run build && npm run cover && tests/saucelabs.sh"
   },
   "homepage": "https://github.com/formatjs/intl-messageformat",
   "directories": {
