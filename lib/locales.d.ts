@@ -1,2 +1,2 @@
-import IntlMessageFormat from '../src/core';
+import IntlMessageFormat from './core';
 export default IntlMessageFormat;

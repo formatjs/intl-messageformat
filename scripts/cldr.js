@@ -44,7 +44,7 @@ ${allLocaleFiles[lang]}`
 outputFileSync(
   resolve(__dirname, "../src/locales.ts"),
   `/* @generated */
-import IntlMessageFormat from '../src/core';\n
+import IntlMessageFormat from './core';\n
 ${Object.keys(allLocaleFiles)
   .map(lang => allLocaleFiles[lang])
   .join("\n")}
