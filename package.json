@@ -38,6 +38,9 @@
     "intl-messageformat-parser": "1.6.1"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^0.1.3",
+    "@types/expect.js": "^0.3.29",
+    "@types/mocha": "^5.2.6",
     "benchmark": "^2.0.0",
     "expect.js": "^0.3.1",
     "formatjs-extract-cldr-data": "^6.1.1",
@@ -52,6 +55,7 @@
     "rollup-plugin-typescript": "^1.0.1",
     "rollup-plugin-uglify": "^6.0.2",
     "serialize-javascript": "^1.7.0",
+    "source-map-support": "^0.5.12",
     "ts-node": "^8.1.0",
     "tslib": "^1.9.3",
     "typescript": "^3.4.5",
@@ -62,11 +66,11 @@
     "build": "npm run clean && npm run cldr && tsc && rollup -c rollup.config.js",
     "cldr": "node scripts/cldr",
     "clean": "rimraf dist lib",
-    "cover": "nyc -x lib/locales.js npm t",
+    "cover": "nyc -x lib/locales.ts npm t",
     "prepublishOnly": "npm run build",
     "prettier": "prettier --write '{src,tests,scripts}/**/*.ts'",
-    "test": "mocha tests/runner.js --reporter spec",
-    "travis": "npm run build && npm run cover && tests/saucelabs.sh"
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha -r ts-node/register -r source-map-support/register tests/index.ts --reporter spec",
+    "travis": "npm run build && npm run cover"
   },
   "homepage": "https://github.com/formatjs/intl-messageformat",
   "directories": {

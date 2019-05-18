@@ -11,9 +11,9 @@ import parser, { MessageFormatPattern } from "intl-messageformat-parser";
 
 // -- MessageFormat --------------------------------------------------------
 
-export default class MessageFormat<T> {
-  public static defaultLocale: string;
-  private static __localeData__: Record<string, any>;
+export default class MessageFormat {
+  public static defaultLocale: string = 'en';
+  public static __localeData__: Record<string, any> = {};
   // Default format options used as the prototype of the `formats` provided to the
   // constructor. These are used when constructing the internal Intl.NumberFormat
   // and Intl.DateTimeFormat instances.
@@ -88,7 +88,7 @@ export default class MessageFormat<T> {
   constructor(
     message: string,
     locales?: string | string[],
-    overrideFormats?: Formats
+    overrideFormats?: Partial<Formats>
   ) {
     // Parse string messages into an AST.
     var ast =
@@ -127,7 +127,7 @@ export default class MessageFormat<T> {
 
   // "Bind" `format()` method to `this` so it can be passed by reference like
   // the other `Intl` APIs.
-  format = (values: Record<string, string | number>) => {
+  format = (values?: Record<string, string | number | boolean | null | undefined>) => {
     try {
       return this._format(this.pattern, values);
     } catch (e) {
@@ -196,14 +196,14 @@ export default class MessageFormat<T> {
     var compiler = new Compiler(locales, formats);
     return compiler.compile(ast);
   }
-  _format(pattern: Pattern[], values: Record<string, string | number>) {
+  _format(pattern: Pattern[], values?: Record<string, string | number | boolean | null | undefined>) {
     var result = "",
       i,
       len,
       part,
       id,
-      value,
-      err;
+      value
+      ;
 
     for (i = 0, len = pattern.length; i < len; i += 1) {
       part = pattern[i];
@@ -237,7 +237,7 @@ export default class MessageFormat<T> {
   }
 }
 
-function mergeConfig(c1: Record<string, object>, c2: Record<string, object>) {
+function mergeConfig(c1: Record<string, object>, c2?: Record<string, object>) {
   if (!c2) {
     return c1;
   }
@@ -254,9 +254,9 @@ function mergeConfig(c1: Record<string, object>, c2: Record<string, object>) {
   };
 }
 
-function mergeConfigs<T extends Formats>(
+function mergeConfigs(
   defaultConfig: Formats,
-  configs?: T
+  configs?: Partial<Formats>
 ): Formats {
   if (!configs) {
     return defaultConfig;
