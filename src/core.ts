@@ -6,7 +6,7 @@ See the accompanying LICENSE file for terms.
 
 /* jslint esnext: true */
 
-import Compiler, { Formats } from "./compiler";
+import Compiler, { Formats, isSelectOrPluralFormat, Pattern } from "./compiler";
 import parser, { MessageFormatPattern } from "intl-messageformat-parser";
 
 // -- MessageFormat --------------------------------------------------------
@@ -127,7 +127,7 @@ export default class MessageFormat<T> {
 
   // "Bind" `format()` method to `this` so it can be passed by reference like
   // the other `Intl` APIs.
-  format = values => {
+  format = (values: Record<string, string | number>) => {
     try {
       return this._format(this.pattern, values);
     } catch (e) {
@@ -196,7 +196,7 @@ export default class MessageFormat<T> {
     var compiler = new Compiler(locales, formats);
     return compiler.compile(ast);
   }
-  _format(pattern: ReturnType<Compiler["compile"]>, values: any) {
+  _format(pattern: Pattern[], values: Record<string, string | number>) {
     var result = "",
       i,
       len,
@@ -218,9 +218,7 @@ export default class MessageFormat<T> {
 
       // Enforce that all required values are provided by the caller.
       if (!(values && id in values)) {
-        err = new Error("A value must be provided for: " + id);
-        err.variableId = id;
-        throw err;
+        throw new FormatError("A value must be provided for: " + id, id);
       }
 
       value = values[id];
@@ -228,10 +226,10 @@ export default class MessageFormat<T> {
       // Recursively format plural and select parts' option — which can be a
       // nested pattern structure. The choosing of the option to use is
       // abstracted-by and delegated-to the part helper object.
-      if (part.options) {
-        result += this._format(part.getOption(value), values);
+      if (isSelectOrPluralFormat(part)) {
+        result += this._format(part.getOption(value as any), values);
       } else {
-        result += part.format(value);
+        result += part.format(value as any);
       }
     }
 
@@ -268,4 +266,12 @@ function mergeConfigs<T extends Formats>(
     ...defaultConfig,
     date: mergeConfig(defaultConfig.date, configs.date)
   };
+}
+
+class FormatError extends Error {
+  public readonly variableId?: string;
+  constructor(msg?: string, variableId?: string) {
+    super(msg);
+    this.variableId = variableId;
+  }
 }

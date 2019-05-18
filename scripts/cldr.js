@@ -42,12 +42,14 @@ ${allLocaleFiles[lang]}`
 
 // Aggregate all into lib/locales.js
 outputFileSync(
-  resolve(__dirname, "../lib/locales.js"),
+  resolve(__dirname, "../src/locales.ts"),
   `/* @generated */
-var IntlMessageFormat = require("./core")["default"];\n
+import IntlMessageFormat from '../src/core';\n
 ${Object.keys(allLocaleFiles)
   .map(lang => allLocaleFiles[lang])
-  .join("\n")}`
+  .join("\n")}
+export default IntlMessageFormat;
+  `
 );
 
 // Extract src/en.js

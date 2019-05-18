@@ -18,9 +18,16 @@ export interface Formats {
   time: Record<string, Intl.DateTimeFormatOptions>;
 }
 
+export type Pattern =
+  | string
+  | PluralOffsetString
+  | PluralFormat
+  | SelectFormat
+  | StringFormat;
+
 export default class Compiler {
   private locales: string | string[] = [];
-  private formats: DefaultFormats = {
+  private formats: Formats = {
     number: {},
     date: {},
     time: {}
@@ -29,12 +36,12 @@ export default class Compiler {
   private currentPlural: ArgumentElement | null | undefined = null;
   private pluralStack: Array<ArgumentElement | null | undefined> = [];
 
-  constructor(locales: string | string[], formats: DefaultFormats) {
+  constructor(locales: string | string[], formats: Formats) {
     this.locales = locales;
     this.formats = formats;
   }
 
-  compile(ast: MessageFormatPattern) {
+  compile(ast: MessageFormatPattern): Pattern[] {
     this.pluralStack = [];
     this.currentPlural = null;
     this.pluralNumberFormat = null;
@@ -48,14 +55,15 @@ export default class Compiler {
     }
     const { elements } = ast;
     const pattern = elements
+      .filter<MessageTextElement | ArgumentElement>(
+        (el): el is MessageTextElement | ArgumentElement =>
+          el.type === "messageTextElement" || el.type === "argumentElement"
+      )
       .map(el =>
         el.type === "messageTextElement"
           ? this.compileMessageText(el)
-          : el.type === "argumentElement"
-          ? this.compileArgument(el)
-          : null
-      )
-      .filter(el => !!el);
+          : this.compileArgument(el)
+      );
     if (pattern.length !== elements.length) {
       throw new Error("Message element does not have a valid type");
     }
@@ -136,7 +144,7 @@ export default class Compiler {
   compileOptions(element: ArgumentElement) {
     const format = element.format as ParserPluralFormat | ParserSelectFormat;
     const { options } = format;
-    const optionsHash = {};
+    const optionsHash: Record<string, Array<Pattern>> = {};
 
     // Save the current plural element, if any, then set it to a new value when
     // compiling the options sub-patterns. This conforms the spec's algorithm
@@ -162,15 +170,15 @@ export default class Compiler {
 
 // -- Compiler Helper Classes --------------------------------------------------
 
-class Formatter {
+abstract class Formatter {
   public id: string;
   constructor(id: string) {
     this.id = id;
   }
-  format(value: string | number) {}
+  abstract format(value: string | number): string;
 }
 
-class StringFormat extends Formatter {
+export class StringFormat extends Formatter {
   format(value: number | string) {
     if (!value && typeof value !== "number") {
       return "";
@@ -180,18 +188,18 @@ class StringFormat extends Formatter {
   }
 }
 
-class PluralFormat extends Formatter {
+export class PluralFormat {
+  public id: string;
   private offset: number;
-  private options: Record<string, string>;
+  private options: Record<string, Pattern[]>;
   private pluralRules: Intl.PluralRules;
   constructor(
     id: string,
     useOrdinal: boolean,
     offset: number,
-    options: Record<string, string>,
+    options: Record<string, Pattern[]>,
     locales: string | string[]
   ) {
-    super(id);
     this.id = id;
     this.offset = offset;
     this.options = options;
@@ -211,7 +219,7 @@ class PluralFormat extends Formatter {
   }
 }
 
-class PluralOffsetString extends Formatter {
+export class PluralOffsetString extends Formatter {
   private offset: number;
   private numberFormat: Intl.NumberFormat;
   private string: string;
@@ -236,9 +244,10 @@ class PluralOffsetString extends Formatter {
   }
 }
 
-class SelectFormat {
-  private options: Record<string, string>;
-  constructor(id: string, options: Record<string, string>) {
+export class SelectFormat {
+  public id: string;
+  private options: Record<string, Pattern[]>;
+  constructor(id: string, options: Record<string, Pattern[]>) {
     this.id = id;
     this.options = options;
   }
@@ -247,4 +256,10 @@ class SelectFormat {
     var options = this.options;
     return options[value] || options.other;
   }
+}
+
+export function isSelectOrPluralFormat(
+  f: any
+): f is SelectFormat | PluralFormat {
+  return !!f.options;
 }

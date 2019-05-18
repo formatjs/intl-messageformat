@@ -4,7 +4,7 @@
         "moduleResolution": "node",
         "target": "es5",
         "lib": ["es6", "dom", "es2018.intl"],
-        "outDir": "dist",
+        "outDir": "tmp",
         "declaration": true,
         "rootDir": "src",
         "strict": true
