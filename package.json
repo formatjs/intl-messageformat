@@ -40,7 +40,7 @@
   "devDependencies": {
     "benchmark": "^2.0.0",
     "expect.js": "^0.3.1",
-    "formatjs-extract-cldr-data": "^6.1.0",
+    "formatjs-extract-cldr-data": "^6.1.1",
     "fs-extra": "^8.0.1",
     "intl": "^1.2.0",
     "intl-pluralrules": "^1.0.1",
@@ -61,7 +61,7 @@
     "benchmark": "node tests/benchmark",
     "build": "npm run clean && npm run cldr && tsc && rollup -c rollup.config.js",
     "cldr": "node scripts/cldr",
-    "clean": "rimraf dist lib tmp",
+    "clean": "rimraf dist lib",
     "cover": "nyc -x lib/locales.js npm t",
     "prepublishOnly": "npm run build",
     "prettier": "prettier --write '{src,tests,scripts}/**/*.ts'",
