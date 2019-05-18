@@ -12,7 +12,7 @@ import parser, { MessageFormatPattern } from "intl-messageformat-parser";
 // -- MessageFormat --------------------------------------------------------
 
 export default class MessageFormat {
-  public static defaultLocale: string = 'en';
+  public static defaultLocale: string = "en";
   public static __localeData__: Record<string, any> = {};
   // Default format options used as the prototype of the `formats` provided to the
   // constructor. These are used when constructing the internal Intl.NumberFormat
@@ -127,7 +127,9 @@ export default class MessageFormat {
 
   // "Bind" `format()` method to `this` so it can be passed by reference like
   // the other `Intl` APIs.
-  format = (values?: Record<string, string | number | boolean | null | undefined>) => {
+  format = (
+    values?: Record<string, string | number | boolean | null | undefined>
+  ) => {
     try {
       return this._format(this.pattern, values);
     } catch (e) {
@@ -196,14 +198,16 @@ export default class MessageFormat {
     var compiler = new Compiler(locales, formats);
     return compiler.compile(ast);
   }
-  _format(pattern: Pattern[], values?: Record<string, string | number | boolean | null | undefined>) {
+  _format(
+    pattern: Pattern[],
+    values?: Record<string, string | number | boolean | null | undefined>
+  ) {
     var result = "",
       i,
       len,
       part,
       id,
-      value
-      ;
+      value;
 
     for (i = 0, len = pattern.length; i < len; i += 1) {
       part = pattern[i];
