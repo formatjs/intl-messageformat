@@ -1636,7 +1636,7 @@
             locales = [locales];
         }
         try {
-            return Intl.PluralRules.supportedLocalesOf(locales, {
+            return Intl.NumberFormat.supportedLocalesOf(locales, {
                 localeMatcher: 'lookup'
             })[0];
         }

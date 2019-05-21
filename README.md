@@ -8,8 +8,7 @@ Formats ICU Message strings with number, date, plural, and select placeholders t
 [![Dependency Status][david-badge]][david]
 
 
-![core gzip size](https://img.badgesize.io/formatjs/intl-messageformat/master/dist/intl-messageformat.min.js?compression=gzip&label=core+gzip+size)
-![core + all locales gzip size](https://img.badgesize.io/formatjs/intl-messageformat/master/dist/intl-messageformat-with-locales.min.js?compression=gzip&label=all+locales+gzip+size)
+![gzip size](https://img.badgesize.io/formatjs/intl-messageformat/master/dist/intl-messageformat.min.js?compression=gzip&label=core+gzip+size)
 
 [![Sauce Test Status][sauce-badge]][sauce]
 
@@ -133,7 +132,7 @@ var msg = new IntlMessageFormat('My name is {name}.', 'en-US');
 
 #### Locale Resolution
 
-`IntlMessageFormat` uses `Intl.PluralRules.supportedLocalesOf()` to determine which locale data to use based on the `locales` value passed to the constructor. The result of this resolution process can be determined by call the `resolvedOptions()` prototype method.
+`IntlMessageFormat` uses `Intl.NumberFormat.supportedLocalesOf()` to determine which locale data to use based on the `locales` value passed to the constructor. The result of this resolution process can be determined by call the `resolvedOptions()` prototype method.
 
 #### `resolvedOptions()` Method
 

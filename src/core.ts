@@ -22,7 +22,7 @@ function resolveLocale(locales: string | string[]): string {
     locales = [locales];
   }
   try {
-    return Intl.PluralRules.supportedLocalesOf(locales, {
+    return Intl.NumberFormat.supportedLocalesOf(locales, {
       localeMatcher: 'lookup'
     })[0];
   } catch (e) {
