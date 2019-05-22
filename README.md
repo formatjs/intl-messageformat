@@ -1,3 +1,5 @@
+# This repo was migrated to the [monorepo](https://github.com/formatjs/formatjs/tree/master/packages/intl-messageformat)
+
 Intl MessageFormat
 ==================
 
